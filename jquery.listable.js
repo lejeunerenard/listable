@@ -1,4 +1,4 @@
-(function( $ ) {
+;(function ( $, window, document, undefined ) {
 	var update = false; // Whether the current form is an update or not
 	var counter = 1;
 	var place = 0;
@@ -460,4 +460,4 @@
 		'after_delete'		: null,
 		'types'			: []
 	}, $.fn.listable.settings);
-})( jQuery );	// End of encapsulation
+})( jQuery, window, document );	// End of encapsulation
