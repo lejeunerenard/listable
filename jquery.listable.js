@@ -35,7 +35,7 @@
 			if ($.fn.listable.counter === undefined) {
 				$.fn.listable.counter = 0;
 			}
-			$.fn.listable.counter += $('li.form_field').length + 1;
+			$.fn.listable.counter += this.element.find('li.form_field').length + 1;
 
 			var settings = this.options;
 
