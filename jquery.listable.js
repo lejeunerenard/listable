@@ -413,6 +413,9 @@
 					 'href' : settings.form_vault,
 					 'onComplete'   :  function(){
 						document.getElementById(itemType.prefix+'_'+itemType.variables[0]).focus();
+                  if ($.isFunction(settings.editOnComplete)) {
+                     settings.editOnComplete();
+                  }
 					 },
 					       'onClosed': function(){
 							$('#'+itemType.formid).resetForm();	// Clear the form when it is closed so data from editing doesnt show when adding a new field
@@ -439,7 +442,15 @@
 										<img src="'+settings.add_image+'" alt="add field"/>\
 									</li>');
 					}
-				}
+				},
+            update: function( event, ui ) {
+               that.element.find('.form_field').each(function(index) {
+                  $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'')+'[name=order\\[\\]]').val(index);
+               });
+					if (typeof settings.update == 'function') {
+						settings.update( event, ui );
+					}
+            }
 			});
 			
 			
@@ -461,10 +472,29 @@
 		},
 
 
-		save: function( itemType ) {
+		save: function( itemType, options1, options2 ) {
 			var settings = this.options;
+         if ( $.isFunction(options1) ) {
+            settings.beforeSave = options1;
+         } else if ( typeof options1 != "undefined") {
+            if ( $.isFunction(options1.beforeSave) ) {
+               settings.beforeSave = options1.beforeSave;
+            }
+            if ( $.isFunction(options1.after_save) ) {
+               settings.after_save = options1.after_save;
+            }
+            if ( $.isFunction(options1.beforeDisplay) ) {
+               settings.beforeDisplay = options1.beforeDisplay;
+            }
+         }
+         if ( $.isFunction(options2) ) {
+            settings.after_save = options2;
+         }
 			if (update) { // Check to see if the user is updating an item or creating a new one
 				var vars = {};
+            if ($.isFunction(settings.beforeSave)) {
+               settings.beforeSave(itemType, vars);
+            }
 				$.each(itemType.variables, function(index, value) {	// Iterate through field variables and colect values. These values are stored in vars under the name of the variable
 					if ($('#'+itemType.prefix+'_'+value).attr('type') == 'checkbox') {
 						if ($('#'+itemType.prefix+'_'+value).attr('checked')) {
@@ -478,6 +508,9 @@
 					}
 					$('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);	// Update all the hidden input fields with values collected
 				});
+            if ($.isFunction(settings.beforeDisplay)) {
+               settings.beforeDisplay(itemType, vars);
+            }
 				$('li.form_field.'+update).empty();	// Clear out items internal html and insert new html in the next line
 				var html_text = '\
 				'+itemType.display(vars);
@@ -493,6 +526,9 @@
 			} else {
 				var vars = {};
 				var tmp_counter = $.fn.listable.counter;
+            if ($.isFunction(settings.beforeSave)) {
+               settings.beforeSave(itemType, vars);
+            }
 				$.each(itemType.variables, function(index, value) {	// Iterate through field variables and colect values. These values are stored in vars under the name of the variable
 
 					if ($('#'+itemType.prefix+'_'+value).attr('type') == 'checkbox') {	// Check to see if its a checkbox type input since checkboxes need to be checked differently than normal inputs
@@ -510,6 +546,9 @@
 					//	Now add standard variables like order and type
 		       			$(settings.variable_vault).append('<input type="hidden" name="order[]" value="0" class="field_'+$.fn.listable.counter+'" >\
 					<input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
+            if ($.isFunction(settings.beforeDisplay)) {
+               settings.beforeDisplay(itemType, vars);
+            }
 				// Calculate then add appropriate html for the new item
 				var append_text = '\
 		       <li class="form_field field_'+$.fn.listable.counter+'">\
@@ -537,7 +576,7 @@
 				}
 		       $.fn.listable.counter++;
 			}
-			if (typeof settings.after_save == 'function') {
+			if ($.isFunction(settings.after_save)) {
 				settings.after_save(itemType);
 			}
 			
