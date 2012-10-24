@@ -442,6 +442,8 @@
 					event.preventDefault();
 				});
 			}
+
+         // Apply sortable plugin
 			this.element.sortable({	// Enable the items to be sortable
 				items: '.form_field',
 				cancel: '.field_divider',
