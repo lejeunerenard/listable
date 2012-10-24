@@ -335,11 +335,11 @@
             var that = this;
 				$('.field_divider').live('mouseover mouseout', function(event) {	// Fade effect for hovering over current divider
 					if (event.type == 'mouseover') {
-						this.element.stop();
-						this.element.fadeTo('slow', 0.5);
+						$(this).stop();
+						$(this).fadeTo('slow', 0.5);
 					} else {
-						this.element.stop();
-						this.element.fadeTo('slow', 1);
+						$(this).stop();
+						$(this).fadeTo('slow', 1);
 					}
 				});
 
@@ -387,7 +387,7 @@
 					edit_link = $(this);
 					update = $(this).attr('class').replace(/edit_field /,'');
 
-				      $('#fancy_inline form').hide();
+				      $(settings.form_vault+' form').hide();
 					var itemType = {};
 					$.each(settings.types, function(index, value) {	// Iterate through the types and find the type of the item who's edit button was clicked
 						if (value.type == $('input.'+edit_link.attr('class').replace(/edit_field /,'')+'[name="type\[\]"]').val()) {
@@ -410,7 +410,7 @@
 					});
 				      $('#'+itemType.formid).show();
 				      $.fancybox({
-					 'href' : '#fancy_inline',
+					 'href' : settings.form_vault,
 					 'onComplete'   :  function(){
 						document.getElementById(itemType.prefix+'_'+itemType.variables[0]).focus();
 					 },
@@ -431,11 +431,11 @@
 				cursor: 'crosshair',
 				change: function(event, ui) {	// This reorientates the field dividers so there are one on either side of the field divider
 					if (settings.field_dividers_enabled) {
-						$('.field_divider').remove();
-						$('.form_field, .place_holder').not('.ui-sortable-helper').before('<li class="field_divider">\
+						that.element.find('.field_divider').remove();
+						that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').before('<li class="field_divider">\
 										<img src="'+settings.add_image+'" alt="add field"/>\
 									</li>');
-						$('#fancy_inline').before('<li class="field_divider">\
+						that.element.find('.form_field, .place_holder').filter(':last').after('<li class="field_divider">\
 										<img src="'+settings.add_image+'" alt="add field"/>\
 									</li>');
 					}
