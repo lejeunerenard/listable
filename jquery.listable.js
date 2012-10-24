@@ -15,20 +15,28 @@
 	$.widget( "ui.listable", $.ui.mouse, {
 		// Options to be used as defaults
 		options: {
-			'edit'			: true,
-			'delete'		: true,
-			'add'			: true,
-			'keyboard_shortcuts'	: false,
-			'add_image'		: '/images/add_field.png',
-			'edit_image'		: '/images/edit_button.png',
-			'delete_image'		: '/images/delete_field.png',
-			'field_dividers_enabled': true,
-			'add_after'		: true,
-			'after_save'		: null,
-			'before_delete'		: null,
-			'after_delete'		: null,
-			'image_dragging'	: false,
-			'types'			: []
+			'add'                      : true,
+			'add_after'                : true,
+			'add_image'                : '/images/add_field.png',
+         'controls'                 : true,
+			'delete'                   : true,
+			'delete_image'             : '/images/delete_field.png',
+			'edit'                     : true,
+			'edit_image'               : '/images/edit_button.png',
+			'field_dividers_enabled'   : true,
+         'form_vault'               : '#listable-form-vault',
+			'image_dragging'           : false,
+			'keyboard_shortcuts'       : false,
+			'types'                    : [],
+         // Callbacks
+			'after_delete'             : null,
+			'after_save'               : null,
+			'before_delete'            : null,
+			'beforeDisplay'            : null,  // beforeSave( itemType, vars )
+			'beforeSave'               : null,  // beforeSave( itemType, vars )
+         'editOnComplete'           : null,
+         'field_divider_click'      : null,
+			'update'                   : null
 		},
 
 		_create: function() {
