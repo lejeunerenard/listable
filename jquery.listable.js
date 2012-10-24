@@ -49,8 +49,53 @@
 
 			// Set variable vault
 			if ( !settings.variable_vault ) {
-				settings.variable_vault = this.element.parent('form');
+				settings.variable_vault = this.element.parents('form');
 			}
+
+         // ----- Lets build things -----
+
+
+         // Listable controls
+         if ( settings.controls ) {
+            var listable_controls = '<div class="listable-controls">';
+            $.each(settings.types, function(index, value) {	// Iterate through the types and find the type of the item who's edit button was clicked
+               listable_controls += '\
+         <a class="button" href="#'+value.formid+'">Add ';
+               if (value.button_name) {
+                  listable_controls += value.button_name;
+               } else {
+                  listable_controls += value.type.charAt(0).toUpperCase() + value.type.slice(1);
+               }
+               listable_controls += '</a>';
+            });
+            listable_controls += '\
+         <a class="close" href="#"></a>\
+      </div>';
+            $('body').append(listable_controls);
+
+
+            // Listable controls click event
+            $('.listable-controls .button').live('click', function(e) {
+               $(settings.form_vault + ' form').hide();
+               $($(this).attr('href')).show();
+               $.fancybox({
+                  'href' : settings.form_vault,
+                  'onComplete'   :  function(){
+                     $($(this).attr('href')).find('input[type!="hidden"]').eq(0).focus();
+                  },
+                  'onClosed'  : function() {
+                     $('.chzn-container').each(function(index) {
+                        $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                     });
+                  }
+               }); 
+            });
+         }
+
+         // Msg Div
+         if ($(settings.form_vault).find('#msg-listable').length == 0) {
+            $(settings.form_vault).prepend('<div id="msg-listable"></div>');
+         }
 
 			if ( settings.image_dragging ) {
 				this.element.find('img').live('dragstart', function(event) { event.preventDefault(); });
@@ -216,7 +261,9 @@
 				<input type="hidden" name="field_options[]" value="" class="field_'+$.fn.listable.counter+'" >\
 				');
 				$.fn.listable.counter++;
-				$('.controls').hide('fast');
+            if (settings.controls) {
+               $('.controls').hide('fast');
+            }
 				no_focus = true;
 				 } 
 				} else if (event.which == 118 && no_focus) { // x is pressed
@@ -285,6 +332,7 @@
 				no_focus = true;
 			});
 			if (settings.field_dividers_enabled) {
+            var that = this;
 				$('.field_divider').live('mouseover mouseout', function(event) {	// Fade effect for hovering over current divider
 					if (event.type == 'mouseover') {
 						this.element.stop();
@@ -295,22 +343,30 @@
 					}
 				});
 
-				// Click event for all field dividers
-				$('.field_divider').live('click', function(){
-					$('.controls').show('fast');
-					$('.controls').css('left',$(this).offset().left+parseInt($(this).css('width'))+25);
-					$('.controls').css('top',$(this).offset().top+parseInt($(this).css('height'))/2-25);
-					if (this.current_divider) {
-					 this.current_divider.attr('hil','');
+            var field_divider_click = function( event ) {
+               if ( settings.controls ) {
+                  $('.listable-controls').show('fast');
+                  $('.listable-controls').css('left',$(this).offset().left+parseInt($(this).css('width'))+25);
+                  $('.listable-controls').css('top',$(this).offset().top+parseInt($(this).css('height'))/2-25);
+               }
+					if (that.current_divider) {
+					 that.current_divider.attr('hil','');
 					}
-					this.current_divider = $(this);
-					this.current_divider.attr('hil','highlighted');
-				});
+					that.current_divider = $(this);
+					that.current_divider.attr('hil','highlighted');
+            };
+            if ( typeof settings.field_divider_click == 'function' ) {
+               field_divider_click = settings.field_divider_click;
+            }
+				// Click event for all field dividers
+				$('.field_divider').live('click', field_divider_click);
 			}
-			$('#controls_close').click(function(event){
-				event.preventDefault();
-				$('.controls').hide('fast');
-			});
+         if ( settings.controls ) {
+            $('.listable-controls .close').click(function(event){
+               event.preventDefault();
+               $('.listable-controls').hide('fast');
+            });
+         }
 			if (settings.delete) {	// If the delete setting is set to true then enable the delete button
 				this.element.find('.delete_field').live('click', function(event){
 					if (typeof settings.before_delete == 'function') {
