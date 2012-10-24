@@ -404,7 +404,15 @@
 								$('#'+itemType.prefix+'_'+value).attr('checked','');
 							}
 
-						} else {
+						} else if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
+                     ids = $('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
+                     for ( var i = 0; i < ids.length; i ++ ) {
+                        $('select#'+itemType.prefix+'_'+value).find('option[value="' + ids[i] + '"]').attr('selected','selected');
+                     }
+                     $('.chzn-container').each(function(index) {
+                        $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                     });
+                  } else {
 							$('#'+itemType.prefix+'_'+value).val($('input.'+update+'[name="'+value+'\[\]"]').val());
 						}
 					});
@@ -419,6 +427,14 @@
 					 },
 					       'onClosed': function(){
 							$('#'+itemType.formid).resetForm();	// Clear the form when it is closed so data from editing doesnt show when adding a new field
+                     $.each(itemType.variables, function(index, value) {	// Iterate through the variables of itemType updating the form
+                        if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
+                           $('select#'+itemType.prefix+'_'+value).find('option').removeAttr('selected');
+                           $('.chzn-container').each(function(index) {
+                              $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                           });
+                        }
+                     });
 							update = false;
 						}
 
