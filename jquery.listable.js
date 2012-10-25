@@ -32,7 +32,7 @@
 			'after_delete'             : null,
 			'after_save'               : null,
 			'before_delete'            : null,
-			'beforeDisplay'            : null,  // beforeSave( itemType, vars )
+			'beforeDisplay'            : null,  // beforeDisplay( itemType, vars )
 			'beforeSave'               : null,  // beforeSave( itemType, vars )
          'editOnComplete'           : null,
          'field_divider_click'      : null,
