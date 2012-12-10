@@ -18,15 +18,20 @@
 			'add'                      : true,
 			'add_after'                : true,
 			'add_image'                : '/images/add_field.png',
+         'auto_build'               : true,
          'controls'                 : true,
 			'delete'                   : true,
 			'delete_image'             : '/images/delete_field.png',
+         'depth'                    : false,
+			'deeper_image'             : '/images/left_arrow.png',
 			'edit'                     : true,
 			'edit_image'               : '/images/edit_button.png',
 			'field_dividers_enabled'   : true,
          'form_vault'               : '#listable-form-vault',
 			'image_dragging'           : false,
 			'keyboard_shortcuts'       : false,
+         'max_depth'                : false,
+			'shallower_image'          : '/images/right_arrow.png',
 			'types'                    : [],
          // Callbacks
 			'after_delete'             : null,
@@ -43,17 +48,24 @@
 			if ($.fn.listable.counter === undefined) {
 				$.fn.listable.counter = 0;
 			}
-			$.fn.listable.counter += this.element.find('li.form_field').length + 1;
 
+         // Universally used variables
 			var settings = this.options;
+         var that = this;
 
 			// Set variable vault
 			if ( !settings.variable_vault ) {
 				settings.variable_vault = this.element.parents('form');
 			}
 
-         // ----- Lets build things -----
-
+         // ===== Lets build things =====
+         
+         // ----- Build listable from existing elements -----
+         if (settings.auto_build) {
+            this.refresh();
+         } else {
+			   $.fn.listable.counter += this.element.find('li.form_field').length + 1;
+         }
 
          // Listable controls
          if ( settings.controls ) {
@@ -332,7 +344,6 @@
 				no_focus = true;
 			});
 			if (settings.field_dividers_enabled) {
-            var that = this;
 				$('.field_divider').live('mouseover mouseout', function(event) {	// Fade effect for hovering over current divider
 					if (event.type == 'mouseover') {
 						$(this).stop();
@@ -367,6 +378,36 @@
                $('.listable-controls').hide('fast');
             });
          }
+			if (settings.depth) {	// If the delete setting is set to true then enable the delete button
+				this.element.find('.field_depth').live('click', function(event){
+               if ($(this).hasClass('shallower')) {
+                  update_class = $(this).attr('class').replace(/field_depth shallower /,'');
+                  depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name="depth\[\]"]').val());
+                  depth -= 1;
+                  if (depth < 0) {
+                     depth = 0;
+                  } else {
+                     that.element.find('.form_field.'+update_class).removeClass('depth_'+(depth + 1)).addClass('depth_'+depth);
+                  }
+                  $(settings.variable_vault).find('input.'+update_class+'[name="depth\[\]"]').val(depth)
+               } else {
+                  update_class = $(this).attr('class').replace(/field_depth deeper /,'');
+                  depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name="depth\[\]"]').val());
+                  depth += 1;
+                  if (settings.max_depth) {
+                     if (depth > settings.max_depth) {
+                        depth = settings.max_depth;
+                     } else {
+                        that.element.find('.form_field.'+update_class).removeClass('depth_'+(depth - 1)).addClass('depth_'+depth);
+                     }
+                  } else {
+                     that.element.find('.form_field.'+update_class).removeClass('depth_'+(depth - 1)).addClass('depth_'+depth);
+                  }
+                  $(settings.variable_vault).find('input.'+update_class+'[name="depth\[\]"]').val(depth)
+               }
+					event.preventDefault();
+				});
+			}
 			if (settings.delete) {	// If the delete setting is set to true then enable the delete button
 				this.element.find('.delete_field').live('click', function(event){
 					if (typeof settings.before_delete == 'function') {
@@ -390,7 +431,7 @@
 				      $(settings.form_vault+' form').hide();
 					var itemType = {};
 					$.each(settings.types, function(index, value) {	// Iterate through the types and find the type of the item who's edit button was clicked
-						if (value.type == $('input.'+edit_link.attr('class').replace(/edit_field /,'')+'[name="type\[\]"]').val()) {
+						if (value.type == settings.variable_vault.find('input.'+edit_link.attr('class').replace(/edit_field /,'')+'[name="type\[\]"]').val()) {
 							itemType = value;
 							return false;
 						}
@@ -398,14 +439,14 @@
 					var vars = {};
 					$.each(itemType.variables, function(index, value) {	// Iterate through the variables of itemType updating the form
 						if ($('#'+itemType.prefix+'_'+value).attr('type') == 'checkbox') {
-							if ($('input.'+update+'[name="'+value+'\[\]"]').val() == '1') {
+							if (settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val() == '1') {
 								$('#'+itemType.prefix+'_'+value).attr('checked','checked');
 							} else {
 								$('#'+itemType.prefix+'_'+value).attr('checked','');
 							}
 
 						} else if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
-                     ids = $('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
+                     ids = settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
                      for ( var i = 0; i < ids.length; i ++ ) {
                         $('select#'+itemType.prefix+'_'+value).find('option[value="' + ids[i] + '"]').attr('selected','selected');
                      }
@@ -413,7 +454,7 @@
                         $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
                      });
                   } else {
-							$('#'+itemType.prefix+'_'+value).val($('input.'+update+'[name="'+value+'\[\]"]').val());
+							$('#'+itemType.prefix+'_'+value).val(settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val());
 						}
 					});
 				      $('#'+itemType.formid).show();
@@ -444,32 +485,34 @@
 			}
 
          // Apply sortable plugin
-			this.element.sortable({	// Enable the items to be sortable
-				items: '.form_field',
-				cancel: '.field_divider',
-				placeholder: 'place_holder',
-				delay: '200',
-				cursor: 'crosshair',
-				change: function(event, ui) {	// This reorientates the field dividers so there are one on either side of the field divider
-					if (settings.field_dividers_enabled) {
-						that.element.find('.field_divider').remove();
-						that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').before('<li class="field_divider">\
-										<img src="'+settings.add_image+'" alt="add field"/>\
-									</li>');
-						that.element.find('.form_field, .place_holder').filter(':last').after('<li class="field_divider">\
-										<img src="'+settings.add_image+'" alt="add field"/>\
-									</li>');
-					}
-				},
-            update: function( event, ui ) {
-               that.element.find('.form_field').each(function(index) {
-                  $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'')+'[name=order\\[\\]]').val(index);
-               });
-					if (typeof settings.update == 'function') {
-						settings.update( event, ui );
-					}
-            }
-			});
+         if (!settings.disabled) {
+            this.element.sortable({	// Enable the items to be sortable
+               items: '.form_field',
+               cancel: '.field_divider',
+               placeholder: 'place_holder',
+               delay: '200',
+               cursor: 'crosshair',
+               change: function(event, ui) {	// This reorientates the field dividers so there are one on either side of the field divider
+                  if (settings.field_dividers_enabled) {
+                     that.element.find('.field_divider').remove();
+                     that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').before('<li class="field_divider">\
+                                 <img src="'+settings.add_image+'" alt="add field"/>\
+                              </li>');
+                     that.element.find('.form_field, .place_holder').filter(':last').after('<li class="field_divider">\
+                                 <img src="'+settings.add_image+'" alt="add field"/>\
+                              </li>');
+                  }
+               },
+               update: function( event, ui ) {
+                  that.element.find('.form_field').each(function(index) {
+                     $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);
+                  });
+                  if (typeof settings.update == 'function') {
+                     settings.update( event, ui );
+                  }
+               }
+            });
+         }
 			
 			
 			return this;
@@ -508,6 +551,7 @@
          if ( $.isFunction(options2) ) {
             settings.after_save = options2;
          }
+         var that = this;
 			if (update) { // Check to see if the user is updating an item or creating a new one
 				var vars = {};
             if ($.isFunction(settings.beforeSave)) {
@@ -524,7 +568,7 @@
 					} else {
 						vars[value] = $('#'+itemType.prefix+'_'+value).val();
 					}
-					$('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);	// Update all the hidden input fields with values collected
+					settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);	// Update all the hidden input fields with values collected
 				});
             if ($.isFunction(settings.beforeDisplay)) {
                settings.beforeDisplay(itemType, vars);
@@ -532,6 +576,11 @@
 				$('li.form_field.'+update).empty();	// Clear out items internal html and insert new html in the next line
 				var html_text = '\
 				'+itemType.display(vars);
+				if (settings.depth) {
+					html_text += '\
+			       <a class="field_depth shallower '+update+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
+			       <a class="field_depth deeper '+update+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>';
+				}
 				if (settings.edit) {
 					html_text += '\
 			       <a class="edit_field '+update+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>';
@@ -564,6 +613,9 @@
 					//	Now add standard variables like order and type
 		       			$(settings.variable_vault).append('<input type="hidden" name="order[]" value="0" class="field_'+$.fn.listable.counter+'" >\
 					<input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
+               if (settings.depth) {
+		       			$(settings.variable_vault).append('<input type="hidden" name="depth[]" value="0" class="field_'+$.fn.listable.counter+'" >');
+               }
             if ($.isFunction(settings.beforeDisplay)) {
                settings.beforeDisplay(itemType, vars);
             }
@@ -571,6 +623,11 @@
 				var append_text = '\
 		       <li class="form_field field_'+$.fn.listable.counter+'">\
 				'+itemType.display(vars);
+				if (settings.depth) {
+					append_text += '\
+			       <a class="field_depth shallower field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
+			       <a class="field_depth deeper field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>';
+				}
 				if (settings.edit) {
 					append_text += '\
 			       <a class="edit_field field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>';
@@ -594,12 +651,85 @@
 				}
 		       $.fn.listable.counter++;
 			}
+         this.element.find('.form_field').each(function(index) {
+            settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
+         });
 			if ($.isFunction(settings.after_save)) {
 				settings.after_save(itemType);
 			}
 			
 			return this;
-		}
+		},
+
+      refresh: function() {
+			var settings = this.options;
+         var that = this;
+
+         // Load up types and their corresponding "type"
+         var type_to_type = new Array();
+         $.each(settings.types, function(index, value) {
+            type_to_type[this.type] = this;
+         });
+
+         if ( ! ( that.current_divider && that.current_divider.length ) ) {
+            that.current_divider = this.element.find('.field_divider').filter(':first');
+         }
+
+         if ( ! ( that.current_divider.length ) ) {
+            that.element.empty();
+         }
+         
+         // Find all label[] hidden inputs and then sort by order[] from high to low
+         settings.variable_vault.find('input[name="label\[\]"]').sort(function(a, b) {
+            return settings.variable_vault.find('input.'+$(b).attr('class')+'[name="order\[\]"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name="order\[\]"]').val();
+         }).each(function(index) {
+            $.fn.listable.counter += 1;
+            var build_item = $(this).attr('class');
+            var itemType = type_to_type[settings.variable_vault.find('input.'+build_item+'[name="type\[\]"]').val()];
+
+            // Populate all the variables
+            var vars = {};
+            $.each(itemType.variables, function(index, value) {	// Iterate through field variables and colect values. These values are stored in vars under the name of the variable
+               vars[value] = settings.variable_vault.find('input.'+build_item+'[name="'+value+'\[\]"]').val();	// Load from the hidden input fields
+            });
+            if ($.isFunction(settings.beforeDisplay)) {
+               settings.beforeDisplay(itemType, vars);
+            }
+            var depth_class = '';
+            if (settings.depth) {
+               depth_class = ' depth_'+settings.variable_vault.find('input.'+build_item+'[name="depth\[\]"]').val();
+            }
+            var html_text = '\
+             <li class="form_field '+build_item+depth_class+'">\
+            '+itemType.display(vars);
+            if (settings.depth) {
+               html_text += '\
+                <a class="field_depth shallower '+build_item+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
+                <a class="field_depth deeper '+build_item+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>';
+            }
+            if (settings.edit) {
+               html_text += '\
+                <a class="edit_field '+build_item+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>';
+            }
+            if (settings.delete) {
+               html_text += '\
+                <a class="delete_field '+build_item+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>';
+            }
+            html_text += '\
+             </li>';
+            if (settings.field_dividers_enabled) {
+               html_text += '\
+             <li class="field_divider '+build_item+'">\
+           <img src="'+settings.add_image+'" alt="add field" />\
+             </li>';
+            }
+            if (that.current_divider.length) {
+               that.current_divider.after(html_text);
+            } else {
+               that.element.prepend(html_text);
+            }
+         });
+      }
 	});
 
 
