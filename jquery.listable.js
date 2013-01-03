@@ -413,9 +413,9 @@
 					if (typeof settings.before_delete == 'function') {
 						settings.before_delete(this);
 					}
-					$('.field_'+$(this).attr('class').replace(/delete_field field_/,'')).remove();
 					$(this).parent().next().remove();
-					$(this).parent().remove();
+					$('.field_'+$(this).attr('class').replace(/delete_field field_/,'')).remove();
+					//$(this).parent().remove();  // Seemed unecessary because parent should be deleted by statement above.
 					event.preventDefault();
 					if (typeof settings.after_delete == 'function') {
 						settings.after_delete(this);
