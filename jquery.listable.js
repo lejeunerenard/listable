@@ -683,7 +683,7 @@
          settings.variable_vault.find('input[name="label\[\]"]').sort(function(a, b) {
             return settings.variable_vault.find('input.'+$(b).attr('class')+'[name="order\[\]"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name="order\[\]"]').val();
          }).each(function(index) {
-            $.fn.listable.counter += 1;
+            $.fn.listable.counter ++;
             var build_item = $(this).attr('class');
             var itemType = type_to_type[settings.variable_vault.find('input.'+build_item+'[name="type\[\]"]').val()];
 
@@ -729,6 +729,7 @@
                that.element.prepend(html_text);
             }
          });
+         $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
       }
 	});
 
