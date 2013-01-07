@@ -28,6 +28,7 @@
 			'edit_image'               : '/images/edit_button.png',
 			'field_dividers_enabled'   : true,
          'form_vault'               : '#listable-form-vault',
+			'gear_image'               : '',
 			'image_dragging'           : false,
 			'keyboard_shortcuts'       : false,
          'max_depth'                : false,
@@ -408,6 +409,13 @@
 					event.preventDefault();
 				});
 			}
+			if (settings.gear_image) {	// If the delete setting is set to true then enable the delete button
+            this.element.find('.listable_item_buttons').hide(0);
+				this.element.find('.listable_gear').live('click', function(event){
+					event.preventDefault();
+               $(this).siblings('.listable_item_buttons').slideToggle('fast');
+				});
+			}
 			if (settings.delete) {	// If the delete setting is set to true then enable the delete button
 				this.element.find('.delete_field').live('click', function(event){
 					if (typeof settings.before_delete == 'function') {
@@ -575,20 +583,32 @@
             }
 				$('li.form_field.'+update).empty();	// Clear out items internal html and insert new html in the next line
 				var html_text = '\
-				'+itemType.display(vars);
+				'+itemType.display(vars)+'\
+			       <a class="field_depth shallower '+update+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
+               <ul class="listable_item_buttons">';
 				if (settings.depth) {
 					html_text += '\
-			       <a class="field_depth shallower '+update+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
-			       <a class="field_depth deeper '+update+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>';
+                  <li>\
+                      <a class="field_depth shallower '+update+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
+                  </li>\
+                  <li>\
+                      <a class="field_depth deeper '+update+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>\
+                  </li>';
 				}
 				if (settings.edit) {
 					html_text += '\
-			       <a class="edit_field '+update+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>';
+                  <li>\
+                   <a class="edit_field '+update+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>\
+                  </li>';
 				}
 				if (settings.delete) {
 					html_text += '\
-			       <a class="delete_field '+update+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>';
+                  <li>\
+                      <a class="delete_field '+update+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>\
+                  </li>';
 				}
+            html_text += '\
+               </ul>';
 				$('li.form_field.'+update).html(html_text);
 			} else {
 				var vars = {};
@@ -701,21 +721,37 @@
             }
             var html_text = '\
              <li class="form_field '+build_item+depth_class+'">\
-            '+itemType.display(vars);
-            if (settings.depth) {
+				'+itemType.display(vars);
+
+            if (settings.gear_image) {
                html_text += '\
-                <a class="field_depth shallower '+build_item+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
-                <a class="field_depth deeper '+build_item+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>';
-            }
-            if (settings.edit) {
-               html_text += '\
-                <a class="edit_field '+build_item+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>';
-            }
-            if (settings.delete) {
-               html_text += '\
-                <a class="delete_field '+build_item+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>';
+               <a class="listable_gear '+build_item+'" href="#"><img src="'+settings.gear_image+'" alt="show icons" /></a>';
             }
             html_text += '\
+               <ul class="listable_item_buttons">';
+				if (settings.depth) {
+					html_text += '\
+                  <li>\
+                      <a class="field_depth shallower '+build_item+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
+                  </li>\
+                  <li>\
+                      <a class="field_depth deeper '+build_item+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>\
+                  </li>';
+				}
+				if (settings.edit) {
+					html_text += '\
+                  <li>\
+                   <a class="edit_field '+build_item+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>\
+                  </li>';
+				}
+				if (settings.delete) {
+					html_text += '\
+                  <li>\
+                      <a class="delete_field '+build_item+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>\
+                  </li>';
+				}
+            html_text += '\
+               </ul>\
              </li>';
             if (settings.field_dividers_enabled) {
                html_text += '\
