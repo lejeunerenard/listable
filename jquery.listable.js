@@ -23,7 +23,7 @@
 			'delete'                   : true,
 			'delete_image'             : '/images/delete_field.png',
          'depth'                    : false,
-			'deeper_image'             : '/images/left_arrow.png',
+			'deeper_image'             : '/images/right_arrow.png',
 			'edit'                     : true,
 			'edit_image'               : '/images/edit_button.png',
 			'field_dividers_enabled'   : true,
@@ -32,7 +32,7 @@
 			'image_dragging'           : false,
 			'keyboard_shortcuts'       : false,
          'max_depth'                : false,
-			'shallower_image'          : '/images/right_arrow.png',
+			'shallower_image'          : '/images/left_arrow.png',
 			'types'                    : [],
          // Callbacks
 			'after_delete'             : null,
@@ -62,10 +62,9 @@
          // ===== Lets build things =====
          
          // ----- Build listable from existing elements -----
+         $.fn.listable.counter += settings.variable_vault.find('input[name="label\[\]"]').length + 1;
          if (settings.auto_build) {
             this.refresh();
-         } else {
-			   $.fn.listable.counter += this.element.find('li.form_field').length + 1;
          }
 
          // Listable controls
@@ -503,10 +502,16 @@
                change: function(event, ui) {	// This reorientates the field dividers so there are one on either side of the field divider
                   if (settings.field_dividers_enabled) {
                      that.element.find('.field_divider').remove();
-                     that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').before('<li class="field_divider">\
+                     that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').each(function(index) {
+                        var field_class = $(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '');
+                        if ($(this).hasClass('place_holder')) {
+                           field_class = that.element.find('.form_field.ui-sortable-helper').attr('class').replace(/form_field /,'').replace(/ depth_\d/, '').replace(/ ui-sortable-helper/, '');
+                        }
+                        $(this).after('<li class="field_divider '+field_class+'">\
                                  <img src="'+settings.add_image+'" alt="add field"/>\
                               </li>');
-                     that.element.find('.form_field, .place_holder').filter(':last').after('<li class="field_divider">\
+                     });
+                     that.element.find('.form_field, .place_holder').first().before('<li class="field_divider field_0">\
                                  <img src="'+settings.add_image+'" alt="add field"/>\
                               </li>');
                   }
@@ -578,41 +583,9 @@
 					}
 					settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);	// Update all the hidden input fields with values collected
 				});
-            if ($.isFunction(settings.beforeDisplay)) {
-               settings.beforeDisplay(itemType, vars);
-            }
-				$('li.form_field.'+update).empty();	// Clear out items internal html and insert new html in the next line
-				var html_text = '\
-				'+itemType.display(vars)+'\
-			       <a class="field_depth shallower '+update+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
-               <ul class="listable_item_buttons">';
-				if (settings.depth) {
-					html_text += '\
-                  <li>\
-                      <a class="field_depth shallower '+update+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
-                  </li>\
-                  <li>\
-                      <a class="field_depth deeper '+update+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>\
-                  </li>';
-				}
-				if (settings.edit) {
-					html_text += '\
-                  <li>\
-                   <a class="edit_field '+update+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>\
-                  </li>';
-				}
-				if (settings.delete) {
-					html_text += '\
-                  <li>\
-                      <a class="delete_field '+update+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>\
-                  </li>';
-				}
-            html_text += '\
-               </ul>';
-				$('li.form_field.'+update).html(html_text);
+            this.refresh();
 			} else {
 				var vars = {};
-				var tmp_counter = $.fn.listable.counter;
             if ($.isFunction(settings.beforeSave)) {
                settings.beforeSave(itemType, vars);
             }
@@ -628,48 +601,27 @@
 					} else {
 						vars[value] = $('#'+itemType.prefix+'_'+value).val();
 					}
-		       			$(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+tmp_counter+'" >');	// Add the hidden input element to the variable vault
+		       			$(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');	// Add the hidden input element to the variable vault
 				});
 					//	Now add standard variables like order and type
-		       			$(settings.variable_vault).append('<input type="hidden" name="order[]" value="0" class="field_'+$.fn.listable.counter+'" >\
+               $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
 					<input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
+
+               // Now update the rest of the order fields
+               that.current_divider.nextAll('.form_field').each(function(index) {
+                  $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val($(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val() + 1);
+               });
+
                if (settings.depth) {
 		       			$(settings.variable_vault).append('<input type="hidden" name="depth[]" value="0" class="field_'+$.fn.listable.counter+'" >');
                }
-            if ($.isFunction(settings.beforeDisplay)) {
-               settings.beforeDisplay(itemType, vars);
-            }
-				// Calculate then add appropriate html for the new item
-				var append_text = '\
-		       <li class="form_field field_'+$.fn.listable.counter+'">\
-				'+itemType.display(vars);
-				if (settings.depth) {
-					append_text += '\
-			       <a class="field_depth shallower field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.shallower_image+'" alt="make field shallower" /></a>\
-			       <a class="field_depth deeper field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.deeper_image+'" alt="make field deeper" /></a>';
-				}
-				if (settings.edit) {
-					append_text += '\
-			       <a class="edit_field field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.edit_image+'" alt="edit field" /></a>';
-				}
-				if (settings.delete) {
-					append_text += '\
-			       <a class="delete_field field_'+$.fn.listable.counter+'" href="#"><img src="'+settings.delete_image+'" alt="delete field" /></a>';
-				}
-				append_text += '\
-		       </li>';
-				if (settings.field_dividers_enabled) {
-					append_text += '\
-		       <li class="field_divider field_'+$.fn.listable.counter+'">\
-			  <img src="'+settings.add_image+'" alt="add field" />\
-		       </li>';
-				}
-				if (settings.add_after) {
-					this.current_divider.after(append_text);
-				} else {
-					this.current_divider.before(append_text);
-				}
-		       $.fn.listable.counter++;
+            $.fn.listable.counter ++;
+            this.refresh();
+				//if (settings.add_after) {
+				//	this.current_divider.after(append_text);
+				//} else {
+				//	this.current_divider.before(append_text);
+				//}
 			}
          this.element.find('.form_field').each(function(index) {
             settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
@@ -691,19 +643,29 @@
             type_to_type[this.type] = this;
          });
 
-         if ( ! ( that.current_divider && that.current_divider.length ) ) {
-            that.current_divider = this.element.find('.field_divider').filter(':first');
+         // Reset and clear applicable variables
+         that.element.empty();
+         var temp_current_divider;
+         if (that.current_divider) {
+            temp_current_divder = that.current_divider;
+         }
+         that.current_divider = null;
+
+         if (settings.field_dividers_enabled) {
+            that.element.append('\
+          <li class="field_divider field_'+$.fn.listable.counter+'">\
+        <img src="'+settings.add_image+'" alt="add field" />\
+          </li>');
          }
 
-         if ( ! ( that.current_divider.length ) ) {
-            that.element.empty();
+         if ( ! ( that.current_divider && that.current_divider.length ) ) {
+            that.current_divider = this.element.find('.field_divider').filter(':first');
          }
          
          // Find all label[] hidden inputs and then sort by order[] from high to low
          settings.variable_vault.find('input[name="label\[\]"]').sort(function(a, b) {
             return settings.variable_vault.find('input.'+$(b).attr('class')+'[name="order\[\]"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name="order\[\]"]').val();
          }).each(function(index) {
-            $.fn.listable.counter ++;
             var build_item = $(this).attr('class');
             var itemType = type_to_type[settings.variable_vault.find('input.'+build_item+'[name="type\[\]"]').val()];
 
@@ -765,7 +727,9 @@
                that.element.prepend(html_text);
             }
          });
-         $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
+         if (temp_current_divider) {
+            that.current_divider = temp_current_divder
+         }
       }
 	});
 
