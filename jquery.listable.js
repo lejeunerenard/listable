@@ -29,6 +29,7 @@
 			'field_dividers_enabled'   : true,
          'form_vault'               : '#listable-form-vault',
 			'gear_image'               : '',
+			'gear_transition'          : 'fade',
 			'image_dragging'           : false,
 			'keyboard_shortcuts'       : false,
          'max_depth'                : false,
@@ -412,7 +413,11 @@
             this.element.find('.listable_item_buttons').hide(0);
 				this.element.find('.listable_gear').live('click', function(event){
 					event.preventDefault();
-               $(this).siblings('.listable_item_buttons').slideToggle('fast');
+               if (settings.gear_transition == 'slide') {
+                  $(this).siblings('.listable_item_buttons').fadeToggle('fast');
+               } else {
+                  $(this).siblings('.listable_item_buttons').fadeToggle('fast');
+               }
 				});
 			}
 			if (settings.delete) {	// If the delete setting is set to true then enable the delete button
