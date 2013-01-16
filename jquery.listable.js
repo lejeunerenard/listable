@@ -26,6 +26,7 @@
 			'deeper_image'             : '/images/right_arrow.png',
 			'edit'                     : true,
 			'edit_image'               : '/images/edit_button.png',
+         'fancybox_padding'         : null,
 			'field_dividers_enabled'   : true,
          'form_vault'               : '#listable-form-vault',
 			'gear_image'               : '',
@@ -91,7 +92,7 @@
             $('.listable-controls .button').live('click', function(e) {
                $(settings.form_vault + ' form').hide();
                $($(this).attr('href')).show();
-               $.fancybox({
+               var fancybox_options = $.extend({}, {
                   'href' : settings.form_vault,
                   'onComplete'   :  function(){
                      $($(this).attr('href')).find('input[type!="hidden"]').eq(0).focus();
@@ -101,7 +102,13 @@
                         $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
                      });
                   }
-               }); 
+               });
+               if (settings.fancybox_padding) {
+                  fancybox_options = $.extend(fancybox_options, {
+                     padding: settings.fancybox_padding
+                  });
+               }
+               $.fancybox(fancybox_options); 
             });
          }
 
@@ -470,7 +477,7 @@
 						}
 					});
 				      $('#'+itemType.formid).show();
-				      $.fancybox({
+                  var fancybox_options = $.extend({},{
 					 'href' : settings.form_vault,
 					 'onComplete'   :  function(){
 						document.getElementById(itemType.prefix+'_'+itemType.variables[0]).focus();
@@ -492,6 +499,12 @@
 						}
 
 				      });
+                  if (settings.fancybox_padding) {
+                     fancybox_options = $.extend(fancybox_options, {
+                        padding: settings.fancybox_padding
+                     });
+                  }
+				      $.fancybox(fancybox_options);
 					event.preventDefault();
 				});
 			}
