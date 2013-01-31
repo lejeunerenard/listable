@@ -21,6 +21,7 @@
          'auto_build'               : true,
          'controls'                 : true,
 			'delete'                   : true,
+			'delete_confirmation'      : false,
 			'delete_image'             : '/images/delete_field.png',
          'depth'                    : false,
 			'deeper_image'             : '/images/right_arrow.png',
@@ -429,6 +430,9 @@
 			}
 			if (settings.delete) {	// If the delete setting is set to true then enable the delete button
 				this.element.find('.delete_field').live('click', function(event){
+               if (settings.delete_confirmation && !confirm("Are you sure you want to delete this? (click 'Cancel' for 'no')") ) {
+                  return false;
+               }
 					if (typeof settings.before_delete == 'function') {
 						settings.before_delete(this);
 					}
