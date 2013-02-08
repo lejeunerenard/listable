@@ -506,9 +506,7 @@
                   }
                },
                update: function( event, ui ) {
-                  that.element.find('.form_field').each(function(index) {
-                     $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);
-                  });
+                  that.update_order();
                   if (typeof settings.update == 'function') {
                      settings.update( event, ui );
                   }
@@ -659,6 +657,9 @@
 			if ($.isFunction(settings.after_save)) {
 				settings.after_save(itemType);
 			}
+
+         // Make sure all elements are in order
+         this.update_order();
 			
 			return this;
 		},
@@ -742,6 +743,15 @@
             }
          });
          $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
+      },
+      update_order: function() {
+         var settings = this.options;
+         var that = this;
+
+         that.element.find('.form_field').each(function(index) {
+            $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name="order\[\]"]').val(index);
+         });
+         return this;
       }
 	});
 
