@@ -29,6 +29,7 @@
 			'field_dividers_enabled'   : true,
          'form_vault'               : '#listable-form-vault',
 			'image_dragging'           : false,
+         'initial_add'              : true,
 			'keyboard_shortcuts'       : false,
          'max_depth'                : false,
 			'shallower_image'          : '/images/right_arrow.png',
@@ -671,12 +672,22 @@
             type_to_type[this.type] = this;
          });
 
+         // If there is no current divider, then set it to be the first field_divider
          if ( ! ( that.current_divider && that.current_divider.length ) ) {
             that.current_divider = this.element.find('.field_divider').filter(':first');
          }
 
+         // If there is still no current_divider, empty the listable elment
          if ( ! ( that.current_divider.length ) ) {
             that.element.empty();
+            // If the setting to insert an initial add button is true, do so.
+            if (settings.initial_add) {
+               that.element.append('\
+             <li class="field_divider divide_0">\
+              <img src="'+settings.add_image+'" alt="add field" />\
+             </li>');
+               that.current_divider = that.element.find('.field_divider').filter(':first');
+            }
          }
          
          // Find all label[] hidden inputs and then sort by order[] from high to low
