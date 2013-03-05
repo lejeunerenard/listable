@@ -33,6 +33,7 @@
 			'gear_image'               : '',
 			'gear_transition'          : 'fade',
 			'image_dragging'           : false,
+         'initial_add'              : true,
 			'keyboard_shortcuts'       : false,
          'max_depth'                : false,
 			'shallower_image'          : '/images/left_arrow.png',
@@ -110,6 +111,7 @@
                   });
                }
                $.fancybox(fancybox_options); 
+               e.preventDefault();
             });
          }
 
@@ -539,9 +541,7 @@
                   }
                },
                update: function( event, ui ) {
-                  that.element.find('.form_field').each(function(index) {
-                     $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);
-                  });
+                  that.update_order();
                   if (typeof settings.update == 'function') {
                      settings.update( event, ui );
                   }
@@ -651,6 +651,9 @@
 			if ($.isFunction(settings.after_save)) {
 				settings.after_save(itemType);
 			}
+
+         // Make sure all elements are in order
+         this.update_order();
 			
 			return this;
 		},
@@ -680,8 +683,22 @@
           </li>');
          }
 
+         // If there is no current divider, then set it to be the first field_divider
          if ( ! ( that.current_divider && that.current_divider.length ) ) {
             that.current_divider = this.element.find('.field_divider').filter(':first');
+         }
+
+         // If there is still no current_divider, empty the listable elment
+         if ( ! ( that.current_divider.length ) ) {
+            that.element.empty();
+            // If the setting to insert an initial add button is true, do so.
+            if (settings.initial_add) {
+               that.element.append('\
+             <li class="field_divider divide_0">\
+              <img src="'+settings.add_image+'" alt="add field" />\
+             </li>');
+               that.current_divider = that.element.find('.field_divider').filter(':first');
+            }
          }
          
          // Find all label[] hidden inputs and then sort by order[] from high to low
@@ -752,6 +769,16 @@
          if (temp_current_divider) {
             that.current_divider = temp_current_divder
          }
+         $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
+      },
+      update_order: function() {
+         var settings = this.options;
+         var that = this;
+
+         that.element.find('.form_field').each(function(index) {
+            $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name="order\[\]"]').val(index);
+         });
+         return this;
       }
 	});
 
