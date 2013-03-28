@@ -53,6 +53,9 @@
 			if ($.fn.listable.counter === undefined) {
 				$.fn.listable.counter = 0;
 			}
+         if ( ! $.fn.listable.current_listable ) {
+            $.fn.listable.current_listable = this.element;
+         }
 
          // Universally used variables
 			var settings = this.options;
@@ -376,6 +379,7 @@
 					}
 					that.current_divider = $(this);
 					that.current_divider.attr('hil','highlighted');
+               $.fn.listable.current_listable = $(this).parent();
             };
             if ( typeof settings.field_divider_click == 'function' ) {
                field_divider_click = settings.field_divider_click;
