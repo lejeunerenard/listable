@@ -625,7 +625,11 @@
 						}
 
 					} else {
-						vars[value] = $('#'+itemType.prefix+'_'+value).val();
+                  if ($('#'+itemType.prefix+'_'+value).length) {
+                     vars[value] = $('input#'+itemType.prefix+'_'+value).val();
+                  } else {
+                     vars[value] = $('input[name="'+itemType.prefix+'_'+value+'"]').val();
+                  }
 					}
 		       			$(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');	// Add the hidden input element to the variable vault
 				});
