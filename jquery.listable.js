@@ -19,6 +19,7 @@
 			'add_after'                : true,
 			'add_image'                : '/images/add_field.png',
          'auto_build'               : true,
+         'connectWith'              : '',
          'controls'                 : true,
 			'delete'                   : true,
 			'delete_confirmation'      : false,
@@ -46,6 +47,7 @@
 			'beforeSave'               : null,  // beforeSave( itemType, vars )
          'editOnComplete'           : null,
          'field_divider_click'      : null,
+			'over'                     : null,
 			'update'                   : null
 		},
 
@@ -60,6 +62,9 @@
          // Universally used variables
 			var settings = this.options;
          var that = this;
+
+         // Add listable class to element if not already added
+         if (!this.element.hasClass('listable')) { this.element.addClass('listable'); }
 
 			// Set variable vault
 			if ( !settings.variable_vault ) {
@@ -444,7 +449,6 @@
 					}
 					$(this).parent().next().remove();
 					$('.field_'+$(this).attr('class').replace(/delete_field field_/,'')).remove();
-					//$(this).parent().remove();  // Seemed unecessary because parent should be deleted by statement above.
 					event.preventDefault();
 					if (typeof settings.after_delete == 'function') {
 						settings.after_delete(this);
@@ -524,6 +528,7 @@
             this.element.sortable({	// Enable the items to be sortable
                items: '.form_field',
                cancel: '.field_divider',
+               connectWith: settings.connectWith,
                placeholder: 'place_holder',
                delay: '200',
                cursor: 'crosshair',
@@ -532,7 +537,7 @@
                      that.element.find('.field_divider').remove();
                      that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').each(function(index) {
                         var field_class = $(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '');
-                        if ($(this).hasClass('place_holder')) {
+                        if ($(this).hasClass('place_holder') && that.element.find('.form_field.ui-sortable-helper').length > 0) {
                            field_class = that.element.find('.form_field.ui-sortable-helper').attr('class').replace(/form_field /,'').replace(/ depth_\d/, '').replace(/ ui-sortable-helper/, '');
                         }
                         $(this).after('<li class="field_divider '+field_class+'">\
@@ -542,6 +547,12 @@
                      that.element.find('.form_field, .place_holder').first().before('<li class="field_divider field_0">\
                                  <img src="'+settings.add_image+'" alt="add field"/>\
                               </li>');
+                  }
+               },
+               over: function( event, ui ) {
+                  that.transfer(event, ui);
+                  if (typeof settings.over == 'function') {
+                     settings.over( event, ui );
                   }
                },
                update: function( event, ui ) {
@@ -647,11 +658,6 @@
                }
             $.fn.listable.counter ++;
             this.refresh();
-				//if (settings.add_after) {
-				//	this.current_divider.after(append_text);
-				//} else {
-				//	this.current_divider.before(append_text);
-				//}
 			}
          this.element.find('.form_field').each(function(index) {
             settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
@@ -778,6 +784,16 @@
             that.current_divider = temp_current_divder
          }
          $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
+      },
+      transfer: function(event, ui) {
+         var settings = this.options;
+         var that = this;
+
+         field_class = ui.item.attr('class').replace(/form_field /,'').replace(/ depth_\d/, '').replace(/ ui-sortable-helper/, '');
+         $('.field_divider.place_holder').removeClass('place_holder').addClass(field_class);
+         $('input[type="hidden"].'+field_class).appendTo(settings.variable_vault);
+
+         return this;
       },
       update_order: function() {
          var settings = this.options;
