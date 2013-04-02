@@ -647,8 +647,15 @@
 		       			$(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');	// Add the hidden input element to the variable vault
 				});
 					//	Now add standard variables like order and type
-               $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
+               if (settings.add_after) {
+                  // Add order with 1 plus the current dividers order
+                  $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
 					<input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
+               } else {
+                  // Add order with the current dividers order minus 1
+                  $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) - 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
+					<input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
+               }
 
                // Now update the rest of the order fields
                that.current_divider.nextAll('.form_field').each(function(index) {
@@ -708,7 +715,7 @@
          if ( ! ( that.current_divider.length ) ) {
             that.element.empty();
             // If the setting to insert an initial add button is true, do so.
-            if (settings.initial_add) {
+            if (settings.initial_add && settings.add_after) {
                that.element.append('\
              <li class="field_divider divide_0">\
               <img src="'+settings.add_image+'" alt="add field" />\
@@ -782,6 +789,13 @@
                that.element.prepend(html_text);
             }
          });
+         if (settings.initial_add && !settings.add_after) {
+            that.element.append('\
+          <li class="field_divider divide_0">\
+           <img src="'+settings.add_image+'" alt="add field" />\
+          </li>');
+            that.current_divider = that.element.find('.field_divider').filter(':first');
+         }
          if (temp_current_divider) {
             that.current_divider = temp_current_divder
          }
