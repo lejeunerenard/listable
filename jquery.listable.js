@@ -725,7 +725,7 @@
          }
          
          // Find all label[] hidden inputs and then sort by order[] from high to low
-         settings.variable_vault.find('input[name="label\[\]"]').sort(function(a, b) {
+         settings.variable_vault.find('input[name="type\[\]"]').sort(function(a, b) {
             return settings.variable_vault.find('input.'+$(b).attr('class')+'[name="order\[\]"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name="order\[\]"]').val();
          }).each(function(index) {
             var build_item = $(this).attr('class');
