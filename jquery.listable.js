@@ -471,30 +471,59 @@
 					});
 					var vars = {};
 					$.each(itemType.variables, function(index, value) {	// Iterate through the variables of itemType updating the form
-						if ($('#'+itemType.prefix+'_'+value).attr('type') == 'checkbox') {
+                  var input_element;   // The input element for this variable
+                  var prefix; // Prefixes can be used to distinguish inputs of the same "name"
+
+                  // Determine Prefix
+                  if (itemType.prefix) {
+                     prefix = itemType.prefix+'_';
+                  } else {
+                     prefix = '';
+                  }
+
+                  // Find element
+                  input_element = that._findInput({
+                     formId: itemType.formid,
+                     prefix: prefix,
+                     value: value
+                  });
+
+                  // Set values in form
+						if (input_element.attr('type') == 'checkbox') {
 							if (settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val() == '1') {
-								$('#'+itemType.prefix+'_'+value).attr('checked','checked');
+								input_element.attr('checked','checked');
 							} else {
-								$('#'+itemType.prefix+'_'+value).attr('checked','');
+								input_element.attr('checked','');
 							}
 
-						} else if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
+						} else if ( input_element.is('select') ) {
                      ids = settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
                      for ( var i = 0; i < ids.length; i ++ ) {
-                        $('select#'+itemType.prefix+'_'+value).find('option[value="' + ids[i] + '"]').attr('selected','selected');
+                        input_element.find('option[value="' + ids[i] + '"]').attr('selected','selected');
                      }
                      $('.chzn-container').each(function(index) {
                         $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
                      });
                   } else {
-							$('#'+itemType.prefix+'_'+value).val(settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val());
+							input_element.val(settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val());
 						}
 					});
+                  var prefix;
+                  if (itemType.prefix) {
+                     prefix = itemType.prefix+'_';
+                  } else {
+                     prefix = '';
+                  }
+                  var first_input = that._findInput({
+                     formId: itemType.formid,
+                     prefix: prefix,
+                     value: itemType.variables[0]
+                  });
 				      $('#'+itemType.formid).show();
                   var fancybox_options = $.extend({},{
 					 'href' : settings.form_vault,
 					 'onComplete'   :  function(){
-						document.getElementById(itemType.prefix+'_'+itemType.variables[0]).focus();
+						first_input.focus();
                   if ($.isFunction(settings.editOnComplete)) {
                      settings.editOnComplete();
                   }
@@ -568,6 +597,26 @@
 			return this;
 		},
 
+      // Function for easy access to input. There are many cases which a user might use for an input such as identifying it by id or name.
+      _findInput: function(options) {
+         var formId = options.formId;
+         var prefix = options.prefix;
+         var value = options.value;
+
+         // Set the form Selector if a form context is given
+         var formSelector;
+         if (formId) {
+            formSelector = '#'+formId+' ';
+         }
+
+         if ($(formSelector+'#'+prefix+value).filter(':input').length > 0) {
+            input_element = $(formSelector+'#'+prefix+value).filter(':input');
+         } else {
+            input_element = $(formSelector+'[name="'+prefix+value+'"]').filter(':input');
+         }
+         return input_element;
+      },
+
 		destroy: function() {
 			$.Widget.prototype.destroy.call(this);
 		},
@@ -610,15 +659,32 @@
                settings.beforeSave(itemType, vars);
             }
 				$.each(itemType.variables, function(index, value) {	// Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-					if ($('#'+itemType.prefix+'_'+value).attr('type') == 'checkbox') {
-						if ($('#'+itemType.prefix+'_'+value).attr('checked')) {
+               var input_element;   // The input element for this variable
+               var prefix; // Prefixes can be used to distinguish inputs of the same "name"
+
+               // Determine Prefix
+               if (itemType.prefix) {
+                  prefix = itemType.prefix+'_';
+               } else {
+                  prefix = '';
+               }
+
+               // Find element
+               input_element = that._findInput({
+                  formId: itemType.formid,
+                  prefix: prefix,
+                  value: value
+               });
+
+					if (input_element.attr('type') == 'checkbox') {
+						if (input_element.attr('checked')) {
 							vars[value] = 1;
 						} else {
 							vars[value] = 0;
 						}
 
 					} else {
-						vars[value] = $('#'+itemType.prefix+'_'+value).val();
+						vars[value] = input_element.val();
 					}
 					settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);	// Update all the hidden input fields with values collected
 				});
@@ -629,22 +695,34 @@
                settings.beforeSave(itemType, vars);
             }
 				$.each(itemType.variables, function(index, value) {	// Iterate through field variables and colect values. These values are stored in vars under the name of the variable
+               var input_element;   // The input element for this variable
+               var prefix; // Prefixes can be used to distinguish inputs of the same "name"
 
-					if ($('#'+itemType.prefix+'_'+value).attr('type') == 'checkbox') {	// Check to see if its a checkbox type input since checkboxes need to be checked differently than normal inputs
-						if ($('#'+itemType.prefix+'_'+value).attr('checked')) {
+               // Determine Prefix
+               if (itemType.prefix) {
+                  prefix = itemType.prefix+'_';
+               } else {
+                  prefix = '';
+               }
+
+               // Find element
+               input_element = that._findInput({
+                  formId: itemType.formid,
+                  prefix: prefix,
+                  value: value
+               });
+
+					if (input_element.attr('type') == 'checkbox') {
+						if (input_element.attr('checked')) {
 							vars[value] = 1;
 						} else {
 							vars[value] = 0;
 						}
 
 					} else {
-                  if ($('#'+itemType.prefix+'_'+value).length) {
-                     vars[value] = $('input#'+itemType.prefix+'_'+value).val();
-                  } else {
-                     vars[value] = $('input[name="'+itemType.prefix+'_'+value+'"]').val();
-                  }
+						vars[value] = input_element.val();
 					}
-		       			$(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');	// Add the hidden input element to the variable vault
+               $(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');	// Add the hidden input element to the variable vault
 				});
 					//	Now add standard variables like order and type
                if (settings.add_after) {
