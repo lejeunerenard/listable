@@ -48,6 +48,7 @@
          'editOnComplete'           : null,
          'field_divider_click'      : null,
             'over'                     : null,
+            'onTransfer'               : null,
             'update'                   : null
         },
 
@@ -585,7 +586,6 @@
                   }
                },
                over: function( event, ui ) {
-                  that.transfer(event, ui);
                   if (typeof settings.over == 'function') {
                      settings.over( event, ui );
                   }
@@ -594,6 +594,12 @@
                   that.update_order();
                   if (typeof settings.update == 'function') {
                      settings.update( event, ui );
+                  }
+                  if (ui.sender) {
+                     that.transfer(event, ui);
+                     if (typeof settings.onTransfer == 'function') {
+                        settings.onTransfer( event, ui );
+                     }
                   }
                }
             });
@@ -891,7 +897,7 @@
 
          field_class = ui.item.attr('class').replace(/form_field /,'').replace(/ depth_\d/, '').replace(/ ui-sortable-helper/, '');
          $('.field_divider.place_holder').removeClass('place_holder').addClass(field_class);
-         $('input[type="hidden"].'+field_class).appendTo(settings.variable_vault);
+         $(ui.sender).listable('option','variable_vault').find('input[type="hidden"].'+field_class).appendTo(settings.variable_vault);
 
          return this;
       },
