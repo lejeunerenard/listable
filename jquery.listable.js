@@ -18,25 +18,25 @@
             'add'                      : true,
             'add_after'                : true,
             'add_image'                : '/javascripts/listable/images/add.png',
-         'auto_build'               : true,
-         'connectWith'              : '',
-         'controls'                 : true,
+            'auto_build'               : true,
+            'connectWith'              : '',
+            'controls'                 : true,
             'delete'                   : true,
             'delete_confirmation'      : false,
             'delete_image'             : '/javascripts/listable/images/delete.png',
-         'depth'                    : false,
+            'depth'                    : false,
             'deeper_image'             : '/javascripts/listable/images/right_arrow.png',
             'edit'                     : true,
             'edit_image'               : '/javascripts/listable/images/edit.png',
-         'fancybox_padding'         : null,
+            'fancybox_padding'         : null,
             'field_dividers_enabled'   : true,
-         'form_vault'               : '#listable-form-vault',
+            'form_vault'               : '#listable-form-vault',
             'gear_image'               : '',
             'gear_transition'          : 'fade',
             'image_dragging'           : false,
-         'initial_add'              : true,
+            'initial_add'              : true,
             'keyboard_shortcuts'       : false,
-         'max_depth'                : false,
+            'max_depth'                : false,
             'shallower_image'          : '/javascripts/listable/images/left_arrow.png',
             'types'                    : [],
          // Callbacks
@@ -45,8 +45,8 @@
             'before_delete'            : null,
             'beforeDisplay'            : null,  // beforeDisplay( itemType, vars )
             'beforeSave'               : null,  // beforeSave( itemType, vars )
-         'editOnComplete'           : null,
-         'field_divider_click'      : null,
+            'editOnComplete'           : null,
+            'field_divider_click'      : null,
             'over'                     : null,
             'onTransfer'               : null,
             'update'                   : null
@@ -56,73 +56,73 @@
             if ($.fn.listable.counter === undefined) {
                 $.fn.listable.counter = 0;
             }
-         if ( ! $.fn.listable.current_listable ) {
-            $.fn.listable.current_listable = this.element;
-         }
+            if ( ! $.fn.listable.current_listable ) {
+               $.fn.listable.current_listable = this.element;
+            }
 
-         // Universally used variables
+            // Universally used variables
             var settings = this.options;
-         var that = this;
+            var that = this;
 
-         // Add listable class to element if not already added
-         if (!this.element.hasClass('listable')) { this.element.addClass('listable'); }
+            // Add listable class to element if not already added
+            if (!this.element.hasClass('listable')) { this.element.addClass('listable'); }
 
             // Set variable vault
             if ( !settings.variable_vault ) {
                 settings.variable_vault = this.element.parents('form');
             }
 
-         // ===== Lets build things =====
+            // ===== Lets build things =====
          
-         // ----- Build listable from existing elements -----
-         $.fn.listable.counter += settings.variable_vault.find('input[name="label\[\]"]').length + 1;
-         if (settings.auto_build) {
-            this.refresh();
-         }
+            // ----- Build listable from existing elements -----
+            $.fn.listable.counter += settings.variable_vault.find('input[name="label\[\]"]').length + 1;
+            if (settings.auto_build) {
+               this.refresh();
+            }
 
-         // Listable controls
-         if ( settings.controls ) {
-            var listable_controls = '<div class="listable-controls">';
-            $.each(settings.types, function(index, value) {    // Iterate through the types and find the type of the item who's edit button was clicked
+            // Listable controls
+            if ( settings.controls ) {
+               var listable_controls = '<div class="listable-controls">';
+               $.each(settings.types, function(index, value) {    // Iterate through the types and find the type of the item who's edit button was clicked
+                  listable_controls += '\
+                  <a class="button" href="#'+value.formid+'">Add ';
+                  if (value.button_name) {
+                     listable_controls += value.button_name;
+                  } else {
+                     listable_controls += value.type.charAt(0).toUpperCase() + value.type.slice(1);
+                  }
+                  listable_controls += '</a>';
+               });
                listable_controls += '\
-         <a class="button" href="#'+value.formid+'">Add ';
-               if (value.button_name) {
-                  listable_controls += value.button_name;
-               } else {
-                  listable_controls += value.type.charAt(0).toUpperCase() + value.type.slice(1);
-               }
-               listable_controls += '</a>';
-            });
-            listable_controls += '\
-         <a class="close" href="#"></a>\
-      </div>';
-            $('body').append(listable_controls);
+            <a class="close" href="#"></a>\
+         </div>';
+               $('body').append(listable_controls);
 
 
-            // Listable controls click event
-            $('.listable-controls .button').live('click', function(e) {
-               $(settings.form_vault + ' form').hide();
-               $($(this).attr('href')).show();
-               var fancybox_options = $.extend({}, {
-                  'href' : settings.form_vault,
-                  'onComplete'   :  function(){
-                     $($(this).attr('href')).find('input[type!="hidden"]').eq(0).focus();
-                  },
-                  'onClosed'  : function() {
-                     $('.chzn-container').each(function(index) {
-                        $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+               // Listable controls click event
+               $('.listable-controls .button').live('click', function(e) {
+                  $(settings.form_vault + ' form').hide();
+                  $($(this).attr('href')).show();
+                  var fancybox_options = $.extend({}, {
+                     'href' : settings.form_vault,
+                     'onComplete'   :  function(){
+                        $($(this).attr('href')).find('input[type!="hidden"]').eq(0).focus();
+                     },
+                     'onClosed'  : function() {
+                        $('.chzn-container').each(function(index) {
+                           $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                        });
+                     }
+                  });
+                  if (settings.fancybox_padding) {
+                     fancybox_options = $.extend(fancybox_options, {
+                        padding: settings.fancybox_padding
                      });
                   }
+                  $.fancybox(fancybox_options); 
+                  e.preventDefault();
                });
-               if (settings.fancybox_padding) {
-                  fancybox_options = $.extend(fancybox_options, {
-                     padding: settings.fancybox_padding
-                  });
-               }
-               $.fancybox(fancybox_options); 
-               e.preventDefault();
-            });
-         }
+            }
 
          // Msg Div
          if ($(settings.form_vault).find('#msg-listable').length == 0) {
