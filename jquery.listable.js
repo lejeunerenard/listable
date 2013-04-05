@@ -84,8 +84,15 @@
             if ( settings.controls ) {
                var listable_controls = '<div class="listable-controls">';
                $.each(settings.types, function(index, value) {    // Iterate through the types and find the type of the item who's edit button was clicked
+
+                  var name_unreadable;
+                  if (value.button_name) {
+                     name_unreadable = value.button_name.toLowerCase().replace(/ /, '_');
+                  } else {
+                     name_unreadable = value.type.toLowerCase().replace(/ /, '_');
+                  }
                   listable_controls += '\
-                  <a class="button" href="#'+value.formid+'">Add ';
+                  <a class="button listable-el-'+name_unreadable+'" href="#'+value.formid+'">Add ';
                   if (value.button_name) {
                      listable_controls += value.button_name;
                   } else {
