@@ -599,14 +599,14 @@
                },
                update: function( event, ui ) {
                   that.update_order();
-                  if (typeof settings.update == 'function') {
-                     settings.update( event, ui );
-                  }
                   if (ui.sender) {
                      that.transfer(event, ui);
                      if (typeof settings.onTransfer == 'function') {
                         settings.onTransfer( event, ui );
                      }
+                  }
+                  if (typeof settings.update == 'function') {
+                     settings.update( event, ui );
                   }
                }
             });
