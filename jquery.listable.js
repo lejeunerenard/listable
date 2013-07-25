@@ -511,14 +511,14 @@
                             }
 
                         } else if ( input_element.is('select') ) {
-                     ids = settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
-                     for ( var i = 0; i < ids.length; i ++ ) {
-                        input_element.find('option[value="' + ids[i] + '"]').attr('selected','selected');
-                     }
-                     $('.chzn-container').each(function(index) {
-                        $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
-                     });
-                  } else {
+                           ids = settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
+                           for ( var i = 0; i < ids.length; i ++ ) {
+                              input_element.find('option[value="' + ids[i] + '"]').attr('selected','selected');
+                           }
+                           $('.chzn-container').each(function(index) {
+                              $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                           });
+                        } else {
                             input_element.val(settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val());
                         }
                     });
