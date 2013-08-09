@@ -539,7 +539,7 @@
                      'onComplete'   :  function(){
                         first_input.focus();
                   if ($.isFunction(settings.editOnComplete)) {
-                     settings.editOnComplete();
+                     settings.editOnComplete(itemType.formid);
                   }
                      },
                            'onClosed': function(){
