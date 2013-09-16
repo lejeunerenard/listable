@@ -783,7 +783,7 @@
          var that = this;
 
          // Load up types and their corresponding "type"
-         var type_to_type = new Array();
+         var type_to_type = new Object();
          $.each(settings.types, function(index, value) {
             type_to_type[this.type] = this;
          });
