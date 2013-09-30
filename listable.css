@@ -51,6 +51,20 @@
    clear: both;
    cursor: move;
 }
+/* -- Buttons -- */
+.listable li {
+   list-style: none;
+}
+.listable-el-class {
+   float: left;
+}
+.listable_item_buttons {
+   display: inline;
+}
+.listable_item_buttons li {
+   display: inline;
+   margin: 0;
+}
 
 
 /* ----------------------------------------
