@@ -1,0 +1,32 @@
+<html>
+   <head>
+      <link type="text/css" href="../listable.css" media="screen" rel="stylesheet" />
+   </head>
+   <body>
+      <ul class="todo">
+      </ul>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="../jquery.listable.js"></script>
+      <script type="text/javascript">
+         var todo = {
+            type: 'todo',
+            formid: 'todo_item',
+            variables: ['id','item'],
+            display: function(vars) {
+               return '<div class="listable-el-class">\
+                  <p>'+vars.item+'</p>\
+               </div>';
+            }
+         };
+         $(function(){
+            $('.todo').listable({
+               add_image: '../images/add.png',
+               types: [todo]
+            });
+         });
+      </script>
+      <div id="listable-form-vault"></div>
+      
+   </body>
+</html>
