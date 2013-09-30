@@ -1,0 +1,53 @@
+<html>
+   <head>
+      <link type="text/css" href="../listable.css" media="screen" rel="stylesheet" />
+      <link rel="stylesheet" href="js/fancybox-1.3.4/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+   </head>
+   <body>
+      <form>
+         <ul class="todo">
+         </ul>
+      </form>
+      <div class="mask">
+         <div id="listable-form-vault">
+            <form id="todo_item">
+               <input type="hidden" value="" name="id" />
+               <input type="text" value="" name="item" />
+               <input type="submit" value="Save" />
+            </form>
+         </div>
+      </div>
+      <!-- Dependencies -->
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="js/fancybox-1.3.4/jquery.fancybox-1.3.4.pack.js"></script>
+      <!-- The Listable script -->
+      <script type="text/javascript" src="../jquery.listable.js"></script>
+      <script type="text/javascript">
+         var todo = {
+            type: 'todo',
+            formid: 'todo_item',
+            variables: ['id','item'],
+            display: function(vars) {
+               return '<div class="listable-el-class">\
+                  <p>'+vars.item+'</p>\
+               </div>';
+            }
+         };
+         $(function(){
+            $('#todo_item').submit(function(event) {
+               $.fn.listable.current_listable.listable('save', todo); // Saves or Updates listable todo item based on its form
+               $.fancybox.close();  // To close the form overlay
+               event.preventDefault();
+            });
+            $('.todo').listable({
+               add_image: '../images/add.png',
+               edit_image: '../images/edit.png',
+               delete_image: '../images/delete.png',
+               types: [todo]
+            });
+         });
+      </script>
+      
+   </body>
+</html>
