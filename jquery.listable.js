@@ -543,7 +543,7 @@
                   }
                      },
                            'onClosed': function(){
-                            $('#'+itemType.formid).resetForm();    // Clear the form when it is closed so data from editing doesnt show when adding a new field
+                            $('#'+itemType.formid)[0].reset();    // Clear the form when it is closed so data from editing doesnt show when adding a new field
                      $.each(itemType.variables, function(index, value) {    // Iterate through the variables of itemType updating the form
                         if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
                            $('select#'+itemType.prefix+'_'+value).find('option').removeAttr('selected');
