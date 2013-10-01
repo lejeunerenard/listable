@@ -15,8 +15,8 @@
     $.widget( "ui.listable", $.ui.mouse, {
         // Options to be used as defaults
         options: {
-            'add'                      : true,
-            'add_after'                : true,
+            'add'                      : true,  // Broken but should enable adding list items
+            'add_after'                : true,  // Maybe Broken. Might need to be changed to default false and to set adding new items at the top of the list 
             'add_image'                : '/javascripts/listable/images/add.png',
             'auto_build'               : true,
             'connectWith'              : '',
