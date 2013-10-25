@@ -12,6 +12,16 @@ module.exports = function(grunt) {
                  ' *  License: <%= pkg.license %>\n' +
                  ' */\n\n'
       },
+      // jshint config
+      jshint: {
+         options: {
+            eqeqeq: true,
+            trailing: true
+         },
+         target: {
+            src: ['src/**/*.js']
+         }
+      },
       // Concat config
       concat: {
          options: {
@@ -27,19 +37,20 @@ module.exports = function(grunt) {
             dest: 'dist/jquery.listable.js'
          }
       },
-      // jshint config
-      jshint: {
+      uglify: {
          options: {
-            eqeqeq: true,
-            trailing: true
+            banner: '<%= meta.banner %>'
          },
-         target: {
-            src: ['src/**/*.js']
+         dist: {
+            files: {
+               'dist/jquery.listable.min.js': ['dist/jquery.listable.min.js']
+            }
          }
       }
    });
    grunt.loadNpmTasks('grunt-contrib-jshint');
    grunt.loadNpmTasks('grunt-contrib-concat');
-   grunt.registerTask('default', ['concat']);
+   grunt.loadNpmTasks('grunt-contrib-uglify');
+   grunt.registerTask('default', ['concat', 'uglify']);
    grunt.registerTask('test', ['jshint']);
 };
