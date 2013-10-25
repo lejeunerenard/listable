@@ -28,7 +28,7 @@
             'gear_transition'          : 'fade',
             'image_dragging'           : true,
             'initial_add'              : true,
-            'max_depth'                : false,
+            'max_depth'                : null,
             'shallower_image'          : '/javascripts/listable/images/left_arrow.png',
             'types'                    : [],
          // Callbacks
