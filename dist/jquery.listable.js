@@ -560,20 +560,26 @@
                if (settings.depth) {
                            $(settings.variable_vault).append('<input type="hidden" name="depth[]" value="0" class="field_'+$.fn.listable.counter+'" >');
                }
-            $.fn.listable.counter ++;
-            this.refresh();
+
+               $.fn.listable.counter ++;
+               this.refresh();
             }
             this.element.find('.form_field').each(function(index) {
                settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
             });
-               if ($.isFunction(settings.after_save)) {
-                   settings.after_save(itemType);
-               }
+
+            // Call after_save callback if able
+            if ($.isFunction(settings.after_save)) {
+                settings.after_save(itemType);
+            }
+
+            // Clear form
+            $('#'+itemType.formid)[0].reset();    // Clear the form when it is closed so data from editing doesnt show when adding a new field
 
             // Make sure all elements are in order
             this.update_order();
                
-               return this;
+            return this;
         },
 
       refresh: function() {
