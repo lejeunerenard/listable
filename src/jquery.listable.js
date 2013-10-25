@@ -1,10 +1,3 @@
-/*!
- * jQuery Listable Plugin
- * Author: @lejeunerenard
- * Licensed under the LGPL license
- */
-
-
 ;(function ( $, window, document, undefined ) {
             
     var update = false; // Whether the current form is an update or not

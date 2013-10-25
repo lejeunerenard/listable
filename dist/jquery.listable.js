@@ -1,9 +1,7 @@
-/*!
- * jQuery Listable Plugin
- * Author: @lejeunerenard
- * Licensed under the LGPL license
+/*! Listable v0.1.0 - 2013-10-25 
+ *  Author: Sean Zellmer 
+ *  License: MIT
  */
-
 
 ;(function ( $, window, document, undefined ) {
             
