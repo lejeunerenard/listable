@@ -53,7 +53,7 @@ module.exports = function(grunt) {
          },
          dist: {
             files: {
-               'dist/jquery.listable.min.js': ['dist/jquery.listable.min.js']
+               'dist/jquery.listable.min.js': ['dist/jquery.listable.js']
             }
          }
       }
