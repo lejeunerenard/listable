@@ -28,7 +28,61 @@
 <h4>fancybox_padding <em>integer (null)</em></h4>
 <p>Sets the padding amount between the FancyBox wrapper and its content.</p>
 <h4>field_dividers_enabled <em>boolean (true)</em></h4>
-<p>Sets the padding amount between the FancyBox wrapper and its content.</p>
+<p>Whether field dividers should be created initially and in between every listable item. Could be set to false for custom ways to add listable items.</p>
+<h4>form_vault <em>selector ('#listable-form-vault')</em></h4>
+<p>The element where all the form for the items are stored. Usually is a hidden '&lt;div&gt;' so the forms are also hidden.</p>
+<h4>gear_image <em>filepath ("")</em></h4>
+<p>Sets the file path for the gear icon. The gear can be used to access other icons such as edit and delete icons.</p>
+<h4>gear_transition <em>string ("fade")</em></h4>
+<p>Sets the transition used to show the other icons. Options are slide or fade.</p>
+<h4>image_dragging <em>boolean (true)</em></h4>
+<p>Whether to allow image dragging of images inside the listable. True = draggable images. False = disabled image dragging.</p>
+<h4>initial_add <em>boolean (true)</em></h4>
+<p>If set to true, the listable will create one more field divider than there are items.</p>
+<h4>max_depth <em>integer (null)</em></h4>
+<p>Sets a maximum number of times an item can be indented.</p>
+<h4>shallower_image <em>filepath ("/javascripts/listable/images/left_arrow.png")</em></h4>
+<p>Sets the file path for the shallower icon. The shallower icon decreases the depth of an item.</p>
+<h4>types <em>array of objects ([])</em></h4>
+<p>Declares what types of items your listable can hold. Each type is declared using an object. Here is an example of an object delcaration:</p>
+<pre>
+   var todo = {
+      type: 'todo',
+      formid: 'todo_item',
+      prefix: '', // optional
+      variables: ['id','item'],
+      display: function(vars) {
+         return '&lt;p&gt;'+vars.item+'&lt;/p&gt;';
+      }
+   };
+</pre>
+<p>type - Type is the name for the type. It is how an item's type is defined. When the hidden inputs are created this is the value for the 'type[]' input.</p>
+<p>formid - This is the id of the form which should be displayed for this item type. The form should have an input for ever variable of this type. This id is how it identifies the inputs for when the item is save and how the form is pulled up when its control button is clicked.</p>
+<p>prefix (opt) - This is a prefix which is added to the name or id of the variables to delineate them from any other inputs on the rest of the page.</p>
+<p>variables - This is a list of all the variables capable of being stored by this listable item type. These variables will be populated by the fields under the given formid. These variables are also passed to various functions specific to the type such as the display function.</p>
+<p>display - This function is used to determine the contents of the listable item. it is passed one parameter which is an object of all the variables for that type with their values. In the example above, each todo item can be seen as a &lt;p&gt; tag with its text set to the item variable of that item.</p>
+
+<h3>Callbacks</h3>
+<h4>after_delete <em>function</em></h4>
+<p>This function is called after an item is deleted.</p>
+<h4>after_save <em>function</em></h4>
+<p>This function is called after an item is saved. It can be overwritten by a callback passed to the save method and is executed both when updating an item and creating an item.</p>
+<h4>before_delete <em>function</em></h4>
+<p>This function is called before an item is deleted.</p>
+<h4>beforeDisplay <em>function</em></h4>
+<p>This function is called before an item's display function is called. It can be overwritten by a callback passed to the save method.</p>
+<h4>beforeSave <em>function</em></h4>
+<p>This function is called before an item is saved. It can be overwritten by a callback passed to the save method and is executed both when updating an item and creating an item.</p>
+<h4>editOnComplete <em>function (itemType.formid)</em></h4>
+<p>This function is called when, after editing, the fancybox's onComplete callback is fired. So it is fired once the fancybox overlay is completely open. It is given one parameter, the current item type's form id.</p>
+<h4>field_divider_click <em>function</em></h4>
+<p>This function is overrides the default callback called when a field divider is clicked. It is passed all the normal parameters passed to a jQuery click event callback.</p>
+<h4>over <em>function</em></h4>
+<p>This callback is identical to the <a href="http://api.jqueryui.com/sortable/#event-over">over event for sortable</a>. It is a callback called when an item is moved into another sortable list.</p>
+<h4>onTransfer <em>function</em></h4>
+<p>This callback is called after the listable transfer method. This callback is given two parameters, event data and the ui variable passed by <a href="http://api.jqueryui.com/sortable/#event-update">sortable to the update callback</a>.</p>
+<h4>update <em>function</em></h4>
+<p>This callback is called after the listable onTransfer method and is called every time the <a href="http://api.jqueryui.com/sortable/#event-update">sortable update event</a> is fired. This callback is given two parameters, event data and the ui variable passed by the sortable update event.</p>
 
 <h3>Public variables</h3>
 <h4>$.fn.listable.current_listable</h4>
