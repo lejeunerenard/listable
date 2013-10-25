@@ -23,5 +23,8 @@
   "author": "Sean Zellmer",
   "license": "MIT",
   "gitHead": "bd2ed7463f6569c05b83e96a03efddce8ac8c7fd",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "~0.4.1"
+  }
 }
