@@ -26,7 +26,7 @@
             'form_vault'               : '#listable-form-vault',
             'gear_image'               : '',
             'gear_transition'          : 'fade',
-            'image_dragging'           : false,
+            'image_dragging'           : true,
             'initial_add'              : true,
             'max_depth'                : false,
             'shallower_image'          : '/javascripts/listable/images/left_arrow.png',
@@ -128,7 +128,7 @@
             $(settings.form_vault).prepend('<div id="msg-listable"></div>');
          }
 
-            if ( settings.image_dragging ) {
+            if ( ! settings.image_dragging ) {
                 this.element.find('img').live('dragstart', function(event) { event.preventDefault(); });
             }
 
@@ -217,12 +217,12 @@
             if (settings.gear_image) {    // If the delete setting is set to true then enable the delete button
             this.element.find('.listable_item_buttons').hide(0);
                 this.element.find('.listable_gear').live('click', function(event){
-                    event.preventDefault();
-               if (settings.gear_transition == 'slide') {
-                  $(this).siblings('.listable_item_buttons').fadeToggle('fast');
-               } else {
-                  $(this).siblings('.listable_item_buttons').fadeToggle('fast');
-               }
+                  event.preventDefault();
+                  if (settings.gear_transition == 'slide') {
+                     $(this).siblings('.listable_item_buttons').slideToggle('fast');
+                  } else {
+                     $(this).siblings('.listable_item_buttons').fadeToggle('fast');
+                  }
                 });
             }
             if (settings.delete) {    // If the delete setting is set to true then enable the delete button
