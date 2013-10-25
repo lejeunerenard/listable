@@ -1,0 +1,27 @@
+{
+  "name": "Listable",
+  "version": "0.1.0",
+  "description": "An extension of jQuery UI's sortables to provide a highly customizable list of objects.",
+  "main": "jquery.listable.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lejeunerenard/listable.git"
+  },
+  "keywords": [
+    "list",
+    "jquery-ui",
+    "sortable",
+    "ui"
+  ],
+  "author": "Sean Zellmer",
+  "license": "MIT",
+  "gitHead": "bd2ed7463f6569c05b83e96a03efddce8ac8c7fd",
+  "readmeFilename": "README.md"
+}
