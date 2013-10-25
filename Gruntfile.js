@@ -37,6 +37,16 @@ module.exports = function(grunt) {
             dest: 'dist/jquery.listable.js'
          }
       },
+      copy: {
+         css: {
+            expand: true,
+            cwd: 'src/',
+            src: '**/*.css',
+            dest: 'dist/',
+            flattern: true,
+            filter: 'isFile'
+         }
+      },
       uglify: {
          options: {
             banner: '<%= meta.banner %>'
@@ -51,6 +61,7 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-contrib-jshint');
    grunt.loadNpmTasks('grunt-contrib-concat');
    grunt.loadNpmTasks('grunt-contrib-uglify');
-   grunt.registerTask('default', ['concat', 'uglify']);
+   grunt.loadNpmTasks('grunt-contrib-copy');
+   grunt.registerTask('default', ['concat', 'copy', 'uglify']);
    grunt.registerTask('test', ['jshint']);
 };
