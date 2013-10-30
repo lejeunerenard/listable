@@ -1,4 +1,4 @@
-/*! Listable v0.1.0 - 2013-10-25 
+/*! Listable v0.1.0 - 2013-10-30 
  *  Author: Sean Zellmer 
  *  License: MIT
  */
@@ -425,11 +425,11 @@
 
         _setOption: function( key, value ) {
             switch( key ) {
-            case 'current_divider':
-               this.current_divider = value;
-                default:
-                    this.options[ key ] = value;
-                    break;
+               case 'current_divider':
+                  this.current_divider = value;
+               default:
+                  this.options[ key ] = value;
+                  break;
             }
 
             $.Widget.prototype._setOption.apply( this, arguments );

@@ -420,11 +420,11 @@
 
         _setOption: function( key, value ) {
             switch( key ) {
-            case 'current_divider':
-               this.current_divider = value;
-                default:
-                    this.options[ key ] = value;
-                    break;
+               case 'current_divider':
+                  this.current_divider = value;
+               default:
+                  this.options[ key ] = value;
+                  break;
             }
 
             $.Widget.prototype._setOption.apply( this, arguments );
