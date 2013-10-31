@@ -1,4 +1,4 @@
-/*! Listable v0.1.0 - 2013-10-30 
+/*! Listable v0.1.0 - 2013-10-31 
  *  Author: Sean Zellmer 
  *  License: MIT
  */
@@ -583,7 +583,7 @@
         },
 
       refresh: function() {
-            var settings = this.options;
+         var settings = this.options;
          var that = this;
 
          // Load up types and their corresponding "type"
@@ -701,6 +701,7 @@
             that.current_divider = temp_current_divder
          }
          $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
+         return this;
       },
       transfer: function(event, ui) {
          var settings = this.options;
