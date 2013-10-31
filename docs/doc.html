@@ -1,3 +1,15 @@
+<h3>Concepts</h3>
+<h4>Form Vault</h4>
+<p>The form vault is an element where all the forms for the various item types reside. Usually this form vault is set to display none so that the forms only appear when the control button for that type is clicked.</p>
+<h4>Variable Vault</h4>
+<p>Listable is an elaborate UI element for form entry. That being the case there must be an input element representing the listable in the form. Listable does this by creating and updating hidden input fields which correspond to the listable itself. The Variable Vault is where these hidden inputs are stored. By default, listable assumes that first form ancestor is the variable vault. If you want your listable to not be an offspring of your form, you can set the Variable Vault to be the form regardless of where the listable itself is.</p>
+<h4>Depth</h4>
+<p>Listable Items can have a depth attribute. This depth attribute most likely will be used to show hierarchy with Items with equal depth being siblings or cousins, Items with more depth being offspring and finally Items with less being ancestors. This can be used to create outlines.</p>
+<h4>Field Dividers</h4>
+<p>Field Dividers are the spaces between Items in a Listable. These spaces act as an add button for placing Items between other Items. If you have no need for spaces between items, you can turn Field Dividers off by setting the field_dividers_enabled setting to false.</p>
+<h4>Controls</h4>
+<p>Listable is designed to be as flexible as possible with how your Item types are inputted and processed. By default, Listable provides a set of buttons we call Controls. These Controls are generated via your type definitions and open the type's corresponding form with FancyBox. Listable's save function will automatically close the FancyBox modal when you are done. If you don't want to use Controls, just set the controls setting to false. If you still want something to happen when you click the add button on the field divider, just set the field_divider_click callback. You can add items anyway you want with Listable.</p>
+<p>&nbsp;</p>
 <h3>Option</h3>
 <h4>add <em>boolean (true)</em></h4>
 <p>Apparently this option doesnt do anything, but it should enable or disable the ability to add items to a listable list.</p>
@@ -61,7 +73,7 @@
 <p>prefix (opt) - This is a prefix which is added to the name or id of the variables to delineate them from any other inputs on the rest of the page.</p>
 <p>variables - This is a list of all the variables capable of being stored by this listable item type. These variables will be populated by the fields under the given formid. These variables are also passed to various functions specific to the type such as the display function.</p>
 <p>display - This function is used to determine the contents of the listable item. it is passed one parameter which is an object of all the variables for that type with their values. In the example above, each todo item can be seen as a &lt;p&gt; tag with its text set to the item variable of that item.</p>
-
+<p>&nbsp;</p>
 <h3>Callbacks</h3>
 <h4>after_delete <em>function</em></h4>
 <p>This function is called after an item is deleted.</p>
@@ -83,7 +95,7 @@
 <p>This callback is called after the listable transfer method. This callback is given two parameters, event data and the ui variable passed by <a href="http://api.jqueryui.com/sortable/#event-update">sortable to the update callback</a>.</p>
 <h4>update <em>function</em></h4>
 <p>This callback is called after the listable onTransfer method and is called every time the <a href="http://api.jqueryui.com/sortable/#event-update">sortable update event</a> is fired. This callback is given two parameters, event data and the ui variable passed by the sortable update event.</p>
-
+<p>&nbsp;</p>
 <h3>Public Methods</h3>
 <h4>listable( 'option' [, options] ) <em>object</em></h4>
 <p>This method is called via the plugin method, like so:</p>
