@@ -84,10 +84,68 @@
 <h4>update <em>function</em></h4>
 <p>This callback is called after the listable onTransfer method and is called every time the <a href="http://api.jqueryui.com/sortable/#event-update">sortable update event</a> is fired. This callback is given two parameters, event data and the ui variable passed by the sortable update event.</p>
 
+<h3>Public Methods</h3>
+<h4>listable( 'option' [, options] ) <em>object</em></h4>
+<p>This method is called via the plugin method, like so:</p>
+<pre>
+   $('.todo').listable('option'); // Returns an object of all options
+   $('.todo').listable('option', 'delete'); // Returns the value of the 'delete' option
+   $('.todo').listable('option', 'delete', false); // Sets the value of the 'delete' option to false
+   $('.todo').listable('option', {
+      delete: false,
+      edit_image: '/images/edit_icon.png'
+   }); // Sets multiple values of options
+</pre>
+<h4>listable( 'save', typeObject [, options] ) <em>object</em></h4>
+<h4>listable( 'save', typeObject [, beforeSave, after_save] ) <em>object</em></h4>
+<p>This method is called to update the listable, usually after submitting the form associated with a listable item type.</p>
+<p>In simplest form, you call the function with only the typeObject argument like so:</p>
+<pre>
+   $('.todo').listable('save', todo); // Saves or Updates listable todo item based on its form
+</pre>
+<p>The listable will take all the input values from the formid in the typeObject and update or create the corresponding listable item.</p>
+<p>In addition to creating/updating the listable, you can create call backs for before and after the listable item is saved like the following:</p>
+<pre>
+   // Just the beforeSave callback
+   $('.todo').listable('save', todo, function(itemType, vars) {
+      console.log(itemType.formid); // Prints the formid for the given type.
+   });
+
+   // The beforeSave and after_save callback
+   $('.todo').listable('save', todo, function(itemType, vars) {
+      console.log(itemType.formid); // Prints the formid for the given type.
+   }, function(itemType) {
+      alert("Item type "+itemType.type+" saved!!");   // Creates alert which tells the type of the item saved.
+   });
+
+   function capitaliseFirstLetter(string)
+   {
+       return string.charAt(0).toUpperCase() + string.slice(1);
+   }
+
+   // Define callbacks with options array
+   $('.todo').listable('save', todo, {
+      beforeSave: function(itemType, vars) {
+         console.log(itemType.formid); // Prints the formid for the given type.
+      },
+      after_save: function(itemType) {
+         alert("Item type "+itemType.type+" saved!!");   // Creates alert which tells the type of the item saved.
+      },
+      beforeDisplay: function(itemType, vars) {
+         // Do a little pre-processing
+         vars.item = capitaliseFirstLetter(vars.item);
+      }
+   });
+</pre>
+<h4>listable( 'refresh' ) <em>object</em></h4>
+<p>This method is called to update the listable visual appearance. This function is called internally any time the listable is changed. If you manually change the listable variables in the variable_vault, call the refresh method to reflect those changes in the listable visual appearance.</p>
+<h4>listable( 'transfer' ) <em>object</em></h4>
+<p>This method is called to update the listables involved in transferring an item from one listable to another. This function is called internally any time a listable item is dragged from a different listable. This function updates the variables in the variable vault and updates some classes of the item.</p>
+<h4>listable( 'update_order' ) <em>object</em></h4>
+<p>This method is called to update the order variables in the variable vault to correspond to visual representation.</p>
+
 <h3>Public variables</h3>
 <h4>$.fn.listable.current_listable</h4>
 <p>Sets the current_listable. Useful when saving changes to a listable on a page with multiple listables.</p>
-<h3>Methods</h3>
-<p>save(itemType [, option1, option2])</p>
 <p>&nbsp;</p>
 <p style="padding-left: 30px;">&nbsp;</p>
