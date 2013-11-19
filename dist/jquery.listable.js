@@ -1,9 +1,7 @@
-/*!
- * jQuery Listable Plugin
- * Author: @lejeunerenard
- * Licensed under the LGPL license
+/*! Listable v0.1.0 - 2013-11-19 
+ *  Author: Sean Zellmer 
+ *  License: MIT
  */
-
 
 ;(function ( $, window, document, undefined ) {
             
@@ -33,9 +31,9 @@
             'form_vault'               : '#listable-form-vault',
             'gear_image'               : '',
             'gear_transition'          : 'fade',
-            'image_dragging'           : false,
+            'image_dragging'           : true,
             'initial_add'              : true,
-            'max_depth'                : false,
+            'max_depth'                : null,
             'shallower_image'          : '/javascripts/listable/images/left_arrow.png',
             'types'                    : [],
          // Callbacks
@@ -135,7 +133,7 @@
             $(settings.form_vault).prepend('<div id="msg-listable"></div>');
          }
 
-            if ( settings.image_dragging ) {
+            if ( ! settings.image_dragging ) {
                 this.element.find('img').live('dragstart', function(event) { event.preventDefault(); });
             }
 
@@ -224,12 +222,12 @@
             if (settings.gear_image) {    // If the delete setting is set to true then enable the delete button
             this.element.find('.listable_item_buttons').hide(0);
                 this.element.find('.listable_gear').live('click', function(event){
-                    event.preventDefault();
-               if (settings.gear_transition == 'slide') {
-                  $(this).siblings('.listable_item_buttons').fadeToggle('fast');
-               } else {
-                  $(this).siblings('.listable_item_buttons').fadeToggle('fast');
-               }
+                  event.preventDefault();
+                  if (settings.gear_transition == 'slide') {
+                     $(this).siblings('.listable_item_buttons').slideToggle('fast');
+                  } else {
+                     $(this).siblings('.listable_item_buttons').fadeToggle('fast');
+                  }
                 });
             }
             if (settings.delete) {    // If the delete setting is set to true then enable the delete button
@@ -427,108 +425,99 @@
 
         _setOption: function( key, value ) {
             switch( key ) {
-            case 'current_divider':
-               this.current_divider = value;
-                default:
-                    this.options[ key ] = value;
-                    break;
+               case 'current_divider':
+                  this.current_divider = value;
+               default:
+                  this.options[ key ] = value;
+                  break;
             }
 
             $.Widget.prototype._setOption.apply( this, arguments );
         },
 
+        /*
+         *  Save
+         *  Takes the listable item type and creates / updates the listable.
+         *
+         */
 
         save: function( itemType, options1, options2 ) {
+            // Universal variables
             var settings = this.options;
-         if ( $.isFunction(options1) ) {
-            settings.beforeSave = options1;
-         } else if ( typeof options1 != "undefined") {
-            if ( $.isFunction(options1.beforeSave) ) {
-               settings.beforeSave = options1.beforeSave;
+            var that = this;
+            var vars = {};
+
+            // Check if second param is a function
+            if ( $.isFunction(options1) ) {
+               // If so set it to the beforeSave callback
+               settings.beforeSave = options1;
+            // If not then if the second param is not undefined, treat it as an options object
+            } else if ( typeof options1 != "undefined") {
+               if ( $.isFunction(options1.beforeSave) ) {
+                  settings.beforeSave = options1.beforeSave;
+               }
+               if ( $.isFunction(options1.after_save) ) {
+                  settings.after_save = options1.after_save;
+               }
+               if ( $.isFunction(options1.beforeDisplay) ) {
+                  settings.beforeDisplay = options1.beforeDisplay;
+               }
+               if ( typeof options1.vars !== 'undefined' ) vars = options1.vars;
             }
-            if ( $.isFunction(options1.after_save) ) {
-               settings.after_save = options1.after_save;
+            // Set after save if given as the second option
+            if ( $.isFunction(options2) ) {
+               settings.after_save = options2;
             }
-            if ( $.isFunction(options1.beforeDisplay) ) {
-               settings.beforeDisplay = options1.beforeDisplay;
-            }
-         }
-         if ( $.isFunction(options2) ) {
-            settings.after_save = options2;
-         }
-         var that = this;
-            if (update) { // Check to see if the user is updating an item or creating a new one
-                var vars = {};
+
+            // Call beforeSave if it exists
             if ($.isFunction(settings.beforeSave)) {
                settings.beforeSave(itemType, vars);
             }
-                $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-               var input_element;   // The input element for this variable
-               var prefix; // Prefixes can be used to distinguish inputs of the same "name"
 
-               // Determine Prefix
-               if (itemType.prefix) {
-                  prefix = itemType.prefix+'_';
-               } else {
-                  prefix = '';
-               }
+            // If vars wasnt defined in an option, load it up with form values.
+            if ($.isEmptyObject(vars)) {
+               // Iterate through field variables and colect values. These values are stored in vars under the name of the variable.
+               $.each(itemType.variables, function(index, value) {
+                  var input_element;   // The input element for this variable
+                  var prefix; // Prefixes can be used to distinguish inputs of the same "name"
 
-               // Find element
-               input_element = that._findInput({
-                  formId: itemType.formid,
-                  prefix: prefix,
-                  value: value
+                  // Determine Prefix
+                  if (itemType.prefix) {
+                     prefix = itemType.prefix+'_';
+                  } else {
+                     prefix = '';
+                  }
+
+                  // Find element
+                  input_element = that._findInput({
+                     formId: itemType.formid,
+                     prefix: prefix,
+                     value: value
+                  });
+
+                  if (input_element.attr('type') == 'checkbox') {
+                     if (input_element.attr('checked')) {
+                        vars[value] = 1;
+                     } else {
+                        vars[value] = 0;
+                     }
+                  } else {
+                     vars[value] = input_element.val();
+                  }
                });
-
-                    if (input_element.attr('type') == 'checkbox') {
-                        if (input_element.attr('checked')) {
-                            vars[value] = 1;
-                        } else {
-                            vars[value] = 0;
-                        }
-
-                    } else {
-                        vars[value] = input_element.val();
-                    }
-                    settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);    // Update all the hidden input fields with values collected
-                });
-            this.refresh();
-            } else {
-                var vars = {};
-            if ($.isFunction(settings.beforeSave)) {
-               settings.beforeSave(itemType, vars);
             }
-                $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-               var input_element;   // The input element for this variable
-               var prefix; // Prefixes can be used to distinguish inputs of the same "name"
 
-               // Determine Prefix
-               if (itemType.prefix) {
-                  prefix = itemType.prefix+'_';
+            // Update or create hidden inputs
+            $.each(vars, function(name, value) {
+               if (update) { // Check to see if the user is updating an item or creating a new one
+                  settings.variable_vault.find('input.'+update+'[name="'+name+'\[\]"]').val(value);    // Update all the hidden input fields with values collected
                } else {
-                  prefix = '';
+                  $(settings.variable_vault).append('<input type="hidden" name="'+name+'[]" value="'+value+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
                }
+            });
 
-               // Find element
-               input_element = that._findInput({
-                  formId: itemType.formid,
-                  prefix: prefix,
-                  value: value
-               });
-
-                    if (input_element.attr('type') == 'checkbox') {
-                        if (input_element.attr('checked')) {
-                            vars[value] = 1;
-                        } else {
-                            vars[value] = 0;
-                        }
-
-                    } else {
-                        vars[value] = input_element.val();
-                    }
-               $(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
-                });
-                    //    Now add standard variables like order and type
+            //    Now add standard variables like order and type
+            if (!update) {
                if (settings.add_after) {
                   // Add order with 1 plus the current dividers order
                   $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
@@ -547,24 +536,33 @@
                if (settings.depth) {
                            $(settings.variable_vault).append('<input type="hidden" name="depth[]" value="0" class="field_'+$.fn.listable.counter+'" >');
                }
-            $.fn.listable.counter ++;
-            this.refresh();
+
+               $.fn.listable.counter ++;
             }
-         this.element.find('.form_field').each(function(index) {
-            settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
-         });
+
+            // Update visual
+            this.refresh();
+
+            this.element.find('.form_field').each(function(index) {
+               settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
+            });
+
+            // Call after_save callback if able
             if ($.isFunction(settings.after_save)) {
                 settings.after_save(itemType);
             }
 
-         // Make sure all elements are in order
-         this.update_order();
-            
+            // Clear form
+            $('#'+itemType.formid)[0].reset();    // Clear the form when it is closed so data from editing doesnt show when adding a new field
+
+            // Make sure all elements are in order
+            this.update_order();
+               
             return this;
         },
 
       refresh: function() {
-            var settings = this.options;
+         var settings = this.options;
          var that = this;
 
          // Load up types and their corresponding "type"
@@ -682,6 +680,7 @@
             that.current_divider = temp_current_divder
          }
          $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
+         return this;
       },
       transfer: function(event, ui) {
          var settings = this.options;
