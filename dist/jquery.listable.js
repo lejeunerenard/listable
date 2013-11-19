@@ -1,4 +1,4 @@
-/*! Listable v0.1.0 - 2013-10-31 
+/*! Listable v0.1.0 - 2013-11-19 
  *  Author: Sean Zellmer 
  *  License: MIT
  */
@@ -442,9 +442,10 @@
          */
 
         save: function( itemType, options1, options2 ) {
-            // Universal vars
+            // Universal variables
             var settings = this.options;
             var that = this;
+            var vars = {};
 
             // Check if second param is a function
             if ( $.isFunction(options1) ) {
@@ -461,18 +462,22 @@
                if ( $.isFunction(options1.beforeDisplay) ) {
                   settings.beforeDisplay = options1.beforeDisplay;
                }
+               if ( typeof options1.vars !== 'undefined' ) vars = options1.vars;
             }
+            // Set after save if given as the second option
             if ( $.isFunction(options2) ) {
                settings.after_save = options2;
             }
 
-            if (update) { // Check to see if the user is updating an item or creating a new one
-               var vars = {};
-               if ($.isFunction(settings.beforeSave)) {
-                  settings.beforeSave(itemType, vars);
-               }
+            // Call beforeSave if it exists
+            if ($.isFunction(settings.beforeSave)) {
+               settings.beforeSave(itemType, vars);
+            }
 
-               $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
+            // If vars wasnt defined in an option, load it up with form values.
+            if ($.isEmptyObject(vars)) {
+               // Iterate through field variables and colect values. These values are stored in vars under the name of the variable.
+               $.each(itemType.variables, function(index, value) {
                   var input_element;   // The input element for this variable
                   var prefix; // Prefixes can be used to distinguish inputs of the same "name"
 
@@ -499,49 +504,20 @@
                   } else {
                      vars[value] = input_element.val();
                   }
-                  settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);    // Update all the hidden input fields with values collected
                });
-               this.refresh();
-            } else {
-               var vars = {};
+            }
 
-               if ($.isFunction(settings.beforeSave)) {
-                  settings.beforeSave(itemType, vars);
+            // Update or create hidden inputs
+            $.each(vars, function(name, value) {
+               if (update) { // Check to see if the user is updating an item or creating a new one
+                  settings.variable_vault.find('input.'+update+'[name="'+name+'\[\]"]').val(value);    // Update all the hidden input fields with values collected
+               } else {
+                  $(settings.variable_vault).append('<input type="hidden" name="'+name+'[]" value="'+value+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
                }
-               $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-                  var input_element;   // The input element for this variable
-                  var prefix; // Prefixes can be used to distinguish inputs of the same "name"
+            });
 
-                  // Determine Prefix
-                  if (itemType.prefix) {
-                     prefix = itemType.prefix+'_';
-                  } else {
-                     prefix = '';
-                  }
-
-                  // Find element
-                  input_element = that._findInput({
-                     formId: itemType.formid,
-                     prefix: prefix,
-                     value: value
-                  });
-
-                  if (input_element.attr('type') == 'checkbox') {
-                     if (input_element.attr('checked')) {
-                        vars[value] = 1;
-                     } else {
-                        vars[value] = 0;
-                     }
-
-                  } else {
-                     vars[value] = input_element.val();
-                  }
-
-                  $(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
-
-               });
-
-               //    Now add standard variables like order and type
+            //    Now add standard variables like order and type
+            if (!update) {
                if (settings.add_after) {
                   // Add order with 1 plus the current dividers order
                   $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
@@ -562,8 +538,11 @@
                }
 
                $.fn.listable.counter ++;
-               this.refresh();
             }
+
+            // Update visual
+            this.refresh();
+
             this.element.find('.form_field').each(function(index) {
                settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
             });
