@@ -461,82 +461,48 @@
                settings.after_save = options2;
             }
 
-            if (update) { // Check to see if the user is updating an item or creating a new one
-               var vars = {};
-               if ($.isFunction(settings.beforeSave)) {
-                  settings.beforeSave(itemType, vars);
+            var vars = {};
+            if ($.isFunction(settings.beforeSave)) {
+               settings.beforeSave(itemType, vars);
+            }
+
+            // Iterate through field variables and colect values. These values are stored in vars under the name of the variable.
+            $.each(itemType.variables, function(index, value) {
+               var input_element;   // The input element for this variable
+               var prefix; // Prefixes can be used to distinguish inputs of the same "name"
+
+               // Determine Prefix
+               if (itemType.prefix) {
+                  prefix = itemType.prefix+'_';
+               } else {
+                  prefix = '';
                }
 
-               $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-                  var input_element;   // The input element for this variable
-                  var prefix; // Prefixes can be used to distinguish inputs of the same "name"
+               // Find element
+               input_element = that._findInput({
+                  formId: itemType.formid,
+                  prefix: prefix,
+                  value: value
+               });
 
-                  // Determine Prefix
-                  if (itemType.prefix) {
-                     prefix = itemType.prefix+'_';
+               if (input_element.attr('type') == 'checkbox') {
+                  if (input_element.attr('checked')) {
+                     vars[value] = 1;
                   } else {
-                     prefix = '';
+                     vars[value] = 0;
                   }
-
-                  // Find element
-                  input_element = that._findInput({
-                     formId: itemType.formid,
-                     prefix: prefix,
-                     value: value
-                  });
-
-                  if (input_element.attr('type') == 'checkbox') {
-                     if (input_element.attr('checked')) {
-                        vars[value] = 1;
-                     } else {
-                        vars[value] = 0;
-                     }
-                  } else {
-                     vars[value] = input_element.val();
-                  }
+               } else {
+                  vars[value] = input_element.val();
+               }
+               if (update) { // Check to see if the user is updating an item or creating a new one
                   settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);    // Update all the hidden input fields with values collected
-               });
-               this.refresh();
-            } else {
-               var vars = {};
-
-               if ($.isFunction(settings.beforeSave)) {
-                  settings.beforeSave(itemType, vars);
-               }
-               $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-                  var input_element;   // The input element for this variable
-                  var prefix; // Prefixes can be used to distinguish inputs of the same "name"
-
-                  // Determine Prefix
-                  if (itemType.prefix) {
-                     prefix = itemType.prefix+'_';
-                  } else {
-                     prefix = '';
-                  }
-
-                  // Find element
-                  input_element = that._findInput({
-                     formId: itemType.formid,
-                     prefix: prefix,
-                     value: value
-                  });
-
-                  if (input_element.attr('type') == 'checkbox') {
-                     if (input_element.attr('checked')) {
-                        vars[value] = 1;
-                     } else {
-                        vars[value] = 0;
-                     }
-
-                  } else {
-                     vars[value] = input_element.val();
-                  }
-
+               } else {
                   $(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
+               }
+            });
 
-               });
-
-               //    Now add standard variables like order and type
+            //    Now add standard variables like order and type
+            if (!update) {
                if (settings.add_after) {
                   // Add order with 1 plus the current dividers order
                   $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
@@ -557,8 +523,11 @@
                }
 
                $.fn.listable.counter ++;
-               this.refresh();
             }
+
+            // Update visual
+            this.refresh();
+
             this.element.find('.form_field').each(function(index) {
                settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
             });
