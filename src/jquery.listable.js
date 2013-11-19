@@ -437,9 +437,10 @@
          */
 
         save: function( itemType, options1, options2 ) {
-            // Universal vars
+            // Universal variables
             var settings = this.options;
             var that = this;
+            var vars = {};
 
             // Check if second param is a function
             if ( $.isFunction(options1) ) {
@@ -456,48 +457,57 @@
                if ( $.isFunction(options1.beforeDisplay) ) {
                   settings.beforeDisplay = options1.beforeDisplay;
                }
+               if ( typeof options1.vars !== 'undefined' ) vars = options1.vars;
             }
+            // Set after save if given as the second option
             if ( $.isFunction(options2) ) {
                settings.after_save = options2;
             }
 
-            var vars = {};
+            // Call beforeSave if it exists
             if ($.isFunction(settings.beforeSave)) {
                settings.beforeSave(itemType, vars);
             }
 
-            // Iterate through field variables and colect values. These values are stored in vars under the name of the variable.
-            $.each(itemType.variables, function(index, value) {
-               var input_element;   // The input element for this variable
-               var prefix; // Prefixes can be used to distinguish inputs of the same "name"
+            // If vars wasnt defined in an option, load it up with form values.
+            if ($.isEmptyObject(vars)) {
+               // Iterate through field variables and colect values. These values are stored in vars under the name of the variable.
+               $.each(itemType.variables, function(index, value) {
+                  var input_element;   // The input element for this variable
+                  var prefix; // Prefixes can be used to distinguish inputs of the same "name"
 
-               // Determine Prefix
-               if (itemType.prefix) {
-                  prefix = itemType.prefix+'_';
-               } else {
-                  prefix = '';
-               }
-
-               // Find element
-               input_element = that._findInput({
-                  formId: itemType.formid,
-                  prefix: prefix,
-                  value: value
-               });
-
-               if (input_element.attr('type') == 'checkbox') {
-                  if (input_element.attr('checked')) {
-                     vars[value] = 1;
+                  // Determine Prefix
+                  if (itemType.prefix) {
+                     prefix = itemType.prefix+'_';
                   } else {
-                     vars[value] = 0;
+                     prefix = '';
                   }
-               } else {
-                  vars[value] = input_element.val();
-               }
+
+                  // Find element
+                  input_element = that._findInput({
+                     formId: itemType.formid,
+                     prefix: prefix,
+                     value: value
+                  });
+
+                  if (input_element.attr('type') == 'checkbox') {
+                     if (input_element.attr('checked')) {
+                        vars[value] = 1;
+                     } else {
+                        vars[value] = 0;
+                     }
+                  } else {
+                     vars[value] = input_element.val();
+                  }
+               });
+            }
+
+            // Update or create hidden inputs
+            $.each(vars, function(name, value) {
                if (update) { // Check to see if the user is updating an item or creating a new one
-                  settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val(vars[value]);    // Update all the hidden input fields with values collected
+                  settings.variable_vault.find('input.'+update+'[name="'+name+'\[\]"]').val(value);    // Update all the hidden input fields with values collected
                } else {
-                  $(settings.variable_vault).append('<input type="hidden" name="'+value+'[]" value="'+vars[value]+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
+                  $(settings.variable_vault).append('<input type="hidden" name="'+name+'[]" value="'+value+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
                }
             });
 
