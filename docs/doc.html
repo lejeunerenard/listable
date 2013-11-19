@@ -57,17 +57,16 @@
 <p>Sets the file path for the shallower icon. The shallower icon decreases the depth of an item.</p>
 <h4>types <em>array of objects ([])</em></h4>
 <p>Declares what types of items your listable can hold. Each type is declared using an object. Here is an example of an object delcaration:</p>
-<pre>
-   var todo = {
-      type: 'todo',
-      formid: 'todo_item',
-      prefix: '', // optional
-      variables: ['id','item'],
-      display: function(vars) {
-         return '&lt;p&gt;'+vars.item+'&lt;/p&gt;';
-      }
-   };
-</pre>
+<pre><code class="javascript">var todo = {
+   type: 'todo',
+   formid: 'todo_item',
+   prefix: '', // optional
+   variables: ['id','item'],
+   display: function(vars) {
+      return '&lt;p&gt;'+vars.item+'&lt;/p&gt;';
+   }
+};
+</code></pre>
 <p>type - Type is the name for the type. It is how an item's type is defined. When the hidden inputs are created this is the value for the 'type[]' input.</p>
 <p>formid - This is the id of the form which should be displayed for this item type. The form should have an input for ever variable of this type. This id is how it identifies the inputs for when the item is save and how the form is pulled up when its control button is clicked.</p>
 <p>prefix (opt) - This is a prefix which is added to the name or id of the variables to delineate them from any other inputs on the rest of the page.</p>
@@ -99,56 +98,53 @@
 <h3>Public Methods</h3>
 <h4>listable( 'option' [, options] ) <em>object</em></h4>
 <p>This method is called via the plugin method, like so:</p>
-<pre>
-   $('.todo').listable('option'); // Returns an object of all options
-   $('.todo').listable('option', 'delete'); // Returns the value of the 'delete' option
-   $('.todo').listable('option', 'delete', false); // Sets the value of the 'delete' option to false
-   $('.todo').listable('option', {
-      delete: false,
-      edit_image: '/images/edit_icon.png'
-   }); // Sets multiple values of options
-</pre>
+<pre><code class="javascript">$('.todo').listable('option'); // Returns an object of all options
+$('.todo').listable('option', 'delete'); // Returns the value of the 'delete' option
+$('.todo').listable('option', 'delete', false); // Sets the value of the 'delete' option to false
+$('.todo').listable('option', {
+   delete: false,
+   edit_image: '/images/edit_icon.png'
+}); // Sets multiple values of options
+</code></pre>
 <h4>listable( 'save', typeObject [, options] ) <em>object</em></h4>
 <h4>listable( 'save', typeObject [, beforeSave, after_save] ) <em>object</em></h4>
 <p>This method is called to update the listable, usually after submitting the form associated with a listable item type.</p>
 <p>In simplest form, you call the function with only the typeObject argument like so:</p>
-<pre>
-   $('.todo').listable('save', todo); // Saves or Updates listable todo item based on its form
-</pre>
+<pre><code class="javascript">$('.todo').listable('save', todo); // Saves or Updates listable todo item based on its form
+</code></pre>
 <p>The listable will take all the input values from the formid in the typeObject and update or create the corresponding listable item.</p>
 <p>In addition to creating/updating the listable, you can create call backs for before and after the listable item is saved like the following:</p>
-<pre>
-   // Just the beforeSave callback
-   $('.todo').listable('save', todo, function(itemType, vars) {
-      console.log(itemType.formid); // Prints the formid for the given type.
-   });
+<pre><code class="javascript">// Just the beforeSave callback
+$('.todo').listable('save', todo, function(itemType, vars) {
+   console.log(itemType.formid); // Prints the formid for the given type.
+});
 
-   // The beforeSave and after_save callback
-   $('.todo').listable('save', todo, function(itemType, vars) {
+// The beforeSave and after_save callback
+$('.todo').listable('save', todo, function(itemType, vars) {
+   console.log(itemType.formid); // Prints the formid for the given type.
+}, function(itemType) {
+   alert("Item type "+itemType.type+" saved!!");   // Creates alert which tells the type of the item saved.
+});
+
+function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+// Define callbacks with options array
+$('.todo').listable('save', todo, {
+   beforeSave: function(itemType, vars) {
       console.log(itemType.formid); // Prints the formid for the given type.
-   }, function(itemType) {
+   },
+   after_save: function(itemType) {
       alert("Item type "+itemType.type+" saved!!");   // Creates alert which tells the type of the item saved.
-   });
-
-   function capitaliseFirstLetter(string)
-   {
-       return string.charAt(0).toUpperCase() + string.slice(1);
+   },
+   beforeDisplay: function(itemType, vars) {
+      // Do a little pre-processing
+      vars.item = capitaliseFirstLetter(vars.item);
    }
-
-   // Define callbacks with options array
-   $('.todo').listable('save', todo, {
-      beforeSave: function(itemType, vars) {
-         console.log(itemType.formid); // Prints the formid for the given type.
-      },
-      after_save: function(itemType) {
-         alert("Item type "+itemType.type+" saved!!");   // Creates alert which tells the type of the item saved.
-      },
-      beforeDisplay: function(itemType, vars) {
-         // Do a little pre-processing
-         vars.item = capitaliseFirstLetter(vars.item);
-      }
-   });
-</pre>
+});
+</code></pre>
 <h4>listable( 'refresh' ) <em>object</em></h4>
 <p>This method is called to update the listable visual appearance. This function is called internally any time the listable is changed. If you manually change the listable variables in the variable_vault, call the refresh method to reflect those changes in the listable visual appearance.</p>
 <h4>listable( 'transfer' ) <em>object</em></h4>
