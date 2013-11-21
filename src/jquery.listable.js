@@ -67,7 +67,7 @@
             // ===== Lets build things =====
          
             // ----- Build listable from existing elements -----
-            $.fn.listable.counter += settings.variable_vault.find('input[name="label\[\]"]').length + 1;
+            $.fn.listable.counter += settings.variable_vault.find('input[name="type\[\]"]').length + 1;
             if (settings.auto_build) {
                this.refresh();
             }

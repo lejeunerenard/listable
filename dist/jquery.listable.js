@@ -1,4 +1,4 @@
-/*! Listable v0.1.0 - 2013-11-19 
+/*! Listable v0.1.0 - 2013-11-21 
  *  Author: Sean Zellmer 
  *  License: MIT
  */
@@ -72,7 +72,7 @@
             // ===== Lets build things =====
          
             // ----- Build listable from existing elements -----
-            $.fn.listable.counter += settings.variable_vault.find('input[name="label\[\]"]').length + 1;
+            $.fn.listable.counter += settings.variable_vault.find('input[name="type\[\]"]').length + 1;
             if (settings.auto_build) {
                this.refresh();
             }
