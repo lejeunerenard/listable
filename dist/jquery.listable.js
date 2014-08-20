@@ -1,4 +1,4 @@
-/*! Listable v0.1.0 - 2013-11-19 
+/*! Listable v0.9.2 - 2014-03-12 
  *  Author: Sean Zellmer 
  *  License: MIT
  */
@@ -72,7 +72,7 @@
             // ===== Lets build things =====
          
             // ----- Build listable from existing elements -----
-            $.fn.listable.counter += settings.variable_vault.find('input[name="label\[\]"]').length + 1;
+            $.fn.listable.counter += settings.variable_vault.find('input[name="type\[\]"]').length + 1;
             if (settings.auto_build) {
                this.refresh();
             }
@@ -113,8 +113,8 @@
                         $($(this).attr('href')).find('input[type!="hidden"]').eq(0).focus();
                      },
                      'onClosed'  : function() {
-                        $('.chzn-container').each(function(index) {
-                           $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                        $('.chosen-container').each(function(index) {
+                           $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger("chosen:updated");
                         });
                      }
                   });
@@ -147,10 +147,10 @@
             $('input, select').blur(function(){
                 no_focus = true;
             });
-            $('#app_folder_chzn').live('focus',function(){
+            $('#app_folder_chosen').live('focus',function(){
                 no_focus = false;
             });
-            $('#app_folder_chzn').live('blur',function(){
+            $('#app_folder_chosen').live('blur',function(){
                 no_focus = true;
             });
             if (settings.field_dividers_enabled) {
@@ -298,8 +298,8 @@
                            for ( var i = 0; i < ids.length; i ++ ) {
                               input_element.find('option[value="' + ids[i] + '"]').attr('selected','selected');
                            }
-                           $('.chzn-container').each(function(index) {
-                              $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                           $('.chosen-container').each(function(index) {
+                              $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger("chosen:updated");
                            });
                         } else {
                             input_element.val(settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val());
@@ -330,8 +330,8 @@
                      $.each(itemType.variables, function(index, value) {    // Iterate through the variables of itemType updating the form
                         if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
                            $('select#'+itemType.prefix+'_'+value).find('option').removeAttr('selected');
-                           $('.chzn-container').each(function(index) {
-                              $('#' + $(this).attr('id').replace(/_chzn/g,'')).trigger("liszt:updated");
+                           $('.chosen-container').each(function(index) {
+                              $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger("chosen:updated");
                            });
                         }
                      });
