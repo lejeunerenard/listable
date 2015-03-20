@@ -15,8 +15,7 @@ module.exports = function(grunt) {
       // config for jshint
       jshint: {
          options: {
-            eqeqeq: true,
-            trailing: true
+            jshintrc: true
          },
          target: {
             src: ['src/**/*.js']

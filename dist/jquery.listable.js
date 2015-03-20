@@ -1,16 +1,14 @@
-/*! Listable v0.9.2 - 2014-03-12 
+/*! Listable v0.9.2 - 2015-03-20 
  *  Author: Sean Zellmer 
  *  License: MIT
  */
 
 ;(function ( $, window, document, undefined ) {
             
-    var update = false; // Whether the current form is an update or not
-    var place = 0;
-    var tooltip_enabled = false; // Whether the tooltips are turned on or not
-    var no_focus = true;
+    var update = false, // Whether the current form is an update or not
+        no_focus = true;
 
-    $.widget( "ui.listable", $.ui.mouse, {
+    $.widget( 'ui.listable', $.ui.mouse, {
         // Options to be used as defaults
         options: {
             'add'                      : true,  // Broken but should enable adding list items
@@ -58,8 +56,8 @@
             }
 
             // Universally used variables
-            var settings = this.options;
-            var that = this;
+            var settings = this.options,
+                that = this;
 
             // Add listable class to element if not already added
             if (!this.element.hasClass('listable')) { this.element.addClass('listable'); }
@@ -72,7 +70,7 @@
             // ===== Lets build things =====
          
             // ----- Build listable from existing elements -----
-            $.fn.listable.counter += settings.variable_vault.find('input[name="type\[\]"]').length + 1;
+            $.fn.listable.counter += settings.variable_vault.find('input[name^="type"]').length + 1;
             if (settings.auto_build) {
                this.refresh();
             }
@@ -113,8 +111,8 @@
                         $($(this).attr('href')).find('input[type!="hidden"]').eq(0).focus();
                      },
                      'onClosed'  : function() {
-                        $('.chosen-container').each(function(index) {
-                           $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger("chosen:updated");
+                        $('.chosen-container').each(function() {
+                           $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger('chosen:updated');
                         });
                      }
                   });
@@ -123,13 +121,13 @@
                         padding: settings.fancybox_padding
                      });
                   }
-                  $.fancybox(fancybox_options); 
+                  $.fancybox(fancybox_options);
                   e.preventDefault();
                });
             }
 
          // Msg Div
-         if ($(settings.form_vault).find('#msg-listable').length == 0) {
+         if ($(settings.form_vault).find('#msg-listable').length === 0) {
             $(settings.form_vault).prepend('<div id="msg-listable"></div>');
          }
 
@@ -155,7 +153,7 @@
             });
             if (settings.field_dividers_enabled) {
                 $('.field_divider').live('mouseover mouseout', function(event) {    // Fade effect for hovering over current divider
-                    if (event.type == 'mouseover') {
+                    if (event.type === 'mouseover') {
                         $(this).stop();
                         $(this).fadeTo('slow', 0.5);
                     } else {
@@ -164,7 +162,7 @@
                     }
                 });
 
-            var field_divider_click = function( event ) {
+            var field_divider_click = function() {
                if ( settings.controls ) {
                   $('.listable-controls').show('fast');
                   $('.listable-controls').css('left',$(this).offset().left+parseInt($(this).css('width'))+25);
@@ -177,7 +175,7 @@
                     that.current_divider.attr('hil','highlighted');
                $.fn.listable.current_listable = $(this).parent();
             };
-            if ( typeof settings.field_divider_click == 'function' ) {
+            if ( typeof settings.field_divider_click === 'function' ) {
                field_divider_click = settings.field_divider_click;
             }
                 // Click event for all field dividers
@@ -193,17 +191,17 @@
                 this.element.find('.field_depth').live('click', function(event){
                if ($(this).hasClass('shallower')) {
                   update_class = $(this).attr('class').replace(/field_depth shallower /,'');
-                  depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name="depth\[\]"]').val());
+                  depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name^="depth"]').val());
                   depth -= 1;
                   if (depth < 0) {
                      depth = 0;
                   } else {
                      that.element.find('.form_field.'+update_class).removeClass('depth_'+(depth + 1)).addClass('depth_'+depth);
                   }
-                  $(settings.variable_vault).find('input.'+update_class+'[name="depth\[\]"]').val(depth)
+                  $(settings.variable_vault).find('input.'+update_class+'[name^="depth"]').val(depth);
                } else {
                   update_class = $(this).attr('class').replace(/field_depth deeper /,'');
-                  depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name="depth\[\]"]').val());
+                  depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name^="depth"]').val());
                   depth += 1;
                   if (settings.max_depth) {
                      if (depth > settings.max_depth) {
@@ -214,7 +212,7 @@
                   } else {
                      that.element.find('.form_field.'+update_class).removeClass('depth_'+(depth - 1)).addClass('depth_'+depth);
                   }
-                  $(settings.variable_vault).find('input.'+update_class+'[name="depth\[\]"]').val(depth)
+                  $(settings.variable_vault).find('input.'+update_class+'[name^="depth"]').val(depth);
                }
                     event.preventDefault();
                 });
@@ -223,7 +221,7 @@
             this.element.find('.listable_item_buttons').hide(0);
                 this.element.find('.listable_gear').live('click', function(event){
                   event.preventDefault();
-                  if (settings.gear_transition == 'slide') {
+                  if (settings.gear_transition === 'slide') {
                      $(this).siblings('.listable_item_buttons').slideToggle('fast');
                   } else {
                      $(this).siblings('.listable_item_buttons').fadeToggle('fast');
@@ -232,13 +230,13 @@
             }
             if (settings.delete) {    // If the delete setting is set to true then enable the delete button
                 this.element.find('.delete_field').live('click', function(event){
-               if (settings.delete_confirmation && !confirm("Are you sure you want to delete this? (click 'Cancel' for 'no')") ) {
+               if (settings.delete_confirmation && !confirm('Are you sure you want to delete this? (click "Cancel" for "no")') ) {
                   return false;
                }
-                    if (typeof settings.before_delete == 'function') {
+                    if (typeof settings.before_delete === 'function') {
                         settings.before_delete(this);
                     }
-                    var element_number = $(this).attr('class').replace(/delete_field field_/,'')
+                    var element_number = $(this).attr('class').replace(/delete_field field_/,'');
                // Remove li and divider
                     that.element.find('.field_'+element_number).remove();
                // Remove inputs in variable vault
@@ -246,7 +244,7 @@
 
                     event.preventDefault();
 
-                    if (typeof settings.after_delete == 'function') {
+                    if (typeof settings.after_delete === 'function') {
                         settings.after_delete(this);
                     }
                 });
@@ -261,12 +259,11 @@
                $(settings.form_vault+' form').hide();
                     var itemType = {};
                     $.each(settings.types, function(index, value) {    // Iterate through the types and find the type of the item who's edit button was clicked
-                        if (value.type == settings.variable_vault.find('input.'+edit_link.attr('class').replace(/edit_field /,'')+'[name="type\[\]"]').val()) {
+                        if (value.type === settings.variable_vault.find('input.'+edit_link.attr('class').replace(/edit_field /,'')+'[name^="type"]').val()) {
                             itemType = value;
                             return false;
                         }
                     });
-                    var vars = {};
                     $.each(itemType.variables, function(index, value) {    // Iterate through the variables of itemType updating the form
                   var input_element;   // The input element for this variable
                   var prefix; // Prefixes can be used to distinguish inputs of the same "name"
@@ -286,23 +283,23 @@
                   });
 
                   // Set values in form
-                        if (input_element.attr('type') == 'checkbox') {
-                            if (settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val() == '1') {
+                        if (input_element.attr('type') === 'checkbox') {
+                            if (settings.variable_vault.find('input.'+update+'[name^="'+value+'"]').val() === '1') {
                                 input_element.attr('checked','checked');
                             } else {
                                 input_element.attr('checked','');
                             }
 
                         } else if ( input_element.is('select') ) {
-                           ids = settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val().split(',');
+                           ids = settings.variable_vault.find('input.'+update+'[name^="'+value+'"]').val().split(',');
                            for ( var i = 0; i < ids.length; i ++ ) {
                               input_element.find('option[value="' + ids[i] + '"]').attr('selected','selected');
                            }
-                           $('.chosen-container').each(function(index) {
-                              $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger("chosen:updated");
+                           $('.chosen-container').each(function() {
+                              $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger('chosen:updated');
                            });
                         } else {
-                            input_element.val(settings.variable_vault.find('input.'+update+'[name="'+value+'\[\]"]').val());
+                            input_element.val(settings.variable_vault.find('input.'+update+'[name^="'+value+'"]').val());
                         }
                     });
                   var prefix;
@@ -330,8 +327,8 @@
                      $.each(itemType.variables, function(index, value) {    // Iterate through the variables of itemType updating the form
                         if ( $('select#'+itemType.prefix+'_'+value).length > 0 ) {
                            $('select#'+itemType.prefix+'_'+value).find('option').removeAttr('selected');
-                           $('.chosen-container').each(function(index) {
-                              $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger("chosen:updated");
+                           $('.chosen-container').each(function() {
+                              $('#' + $(this).attr('id').replace(/_chosen/g,'')).trigger('chosen:updated');
                            });
                         }
                      });
@@ -358,10 +355,10 @@
                placeholder: 'place_holder',
                delay: '200',
                cursor: 'crosshair',
-               change: function(event, ui) {    // This reorientates the field dividers so there are one on either side of the field divider
+               change: function() {    // This reorientates the field dividers so there are one on either side of the field divider
                   if (settings.field_dividers_enabled) {
                      that.element.find('.field_divider').remove();
-                     that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').each(function(index) {
+                     that.element.find('.form_field, .place_holder').not('.ui-sortable-helper').each(function() {
                         var field_class = $(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '');
                         if ($(this).hasClass('place_holder') && that.element.find('.form_field.ui-sortable-helper').length > 0) {
                            field_class = that.element.find('.form_field.ui-sortable-helper').attr('class').replace(/form_field /,'').replace(/ depth_\d/, '').replace(/ ui-sortable-helper/, '');
@@ -376,7 +373,7 @@
                   }
                },
                over: function( event, ui ) {
-                  if (typeof settings.over == 'function') {
+                  if (typeof settings.over === 'function') {
                      settings.over( event, ui );
                   }
                },
@@ -384,11 +381,11 @@
                   that.update_order();
                   if (ui.sender) {
                      that.transfer(event, ui);
-                     if (typeof settings.onTransfer == 'function') {
+                     if (typeof settings.onTransfer === 'function') {
                         settings.onTransfer( event, ui );
                      }
                   }
-                  if (typeof settings.update == 'function') {
+                  if (typeof settings.update === 'function') {
                      settings.update( event, ui );
                   }
                }
@@ -427,6 +424,7 @@
             switch( key ) {
                case 'current_divider':
                   this.current_divider = value;
+                  break;
                default:
                   this.options[ key ] = value;
                   break;
@@ -452,7 +450,7 @@
                // If so set it to the beforeSave callback
                settings.beforeSave = options1;
             // If not then if the second param is not undefined, treat it as an options object
-            } else if ( typeof options1 != "undefined") {
+            } else if ( typeof options1 !== 'undefined') {
                if ( $.isFunction(options1.beforeSave) ) {
                   settings.beforeSave = options1.beforeSave;
                }
@@ -462,7 +460,7 @@
                if ( $.isFunction(options1.beforeDisplay) ) {
                   settings.beforeDisplay = options1.beforeDisplay;
                }
-               if ( typeof options1.vars !== 'undefined' ) vars = options1.vars;
+               if ( typeof options1.vars !== 'undefined' ) { vars = options1.vars; }
             }
             // Set after save if given as the second option
             if ( $.isFunction(options2) ) {
@@ -495,7 +493,7 @@
                      value: value
                   });
 
-                  if (input_element.attr('type') == 'checkbox') {
+                  if (input_element.attr('type') === 'checkbox') {
                      if (input_element.attr('checked')) {
                         vars[value] = 1;
                      } else {
@@ -510,7 +508,7 @@
             // Update or create hidden inputs
             $.each(vars, function(name, value) {
                if (update) { // Check to see if the user is updating an item or creating a new one
-                  settings.variable_vault.find('input.'+update+'[name="'+name+'\[\]"]').val(value);    // Update all the hidden input fields with values collected
+                  settings.variable_vault.find('input.'+update+'[name^="'+name+'"]').val(value);    // Update all the hidden input fields with values collected
                } else {
                   $(settings.variable_vault).append('<input type="hidden" name="'+name+'[]" value="'+value+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
                }
@@ -520,16 +518,16 @@
             if (!update) {
                if (settings.add_after) {
                   // Add order with 1 plus the current dividers order
-                  $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
+                  $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name^="order"]').val() ) + 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
                     <input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
                } else {
                   // Add order with the current dividers order minus 1
-                  $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name="order\[\]"]').val() ) - 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
+                  $(settings.variable_vault).append('<input type="hidden" name="order[]" value="'+ ( parseInt( $('.' + that.current_divider.attr('class').replace(/field_divider /,'') + '[name^="order"]').val() ) - 1 ) +'" class="field_'+$.fn.listable.counter+'" >\
                     <input type="hidden" name="type[]" value="'+itemType.type+'" class="field_'+$.fn.listable.counter+'" >');
                }
 
                // Now update the rest of the order fields
-               that.current_divider.nextAll('.form_field').each(function(index) {
+               that.current_divider.nextAll('.form_field').each(function() {
                   $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val($(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val() + 1);
                });
 
@@ -544,7 +542,7 @@
             this.refresh();
 
             this.element.find('.form_field').each(function(index) {
-               settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);   
+               settings.variable_vault.find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name=order\\[\\]]').val(index);
             });
 
             // Call after_save callback if able
@@ -566,8 +564,8 @@
          var that = this;
 
          // Load up types and their corresponding "type"
-         var type_to_type = new Object();
-         $.each(settings.types, function(index, value) {
+         var type_to_type = {};
+         $.each(settings.types, function() {
             type_to_type[this.type] = this;
          });
 
@@ -605,23 +603,23 @@
          }
          
          // Find all label[] hidden inputs and then sort by order[] from high to low
-         settings.variable_vault.find('input[name="type\[\]"]').sort(function(a, b) {
-            return settings.variable_vault.find('input.'+$(b).attr('class')+'[name="order\[\]"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name="order\[\]"]').val();
-         }).each(function(index) {
+         settings.variable_vault.find('input[name^="type"]').sort(function(a, b) {
+            return settings.variable_vault.find('input.'+$(b).attr('class')+'[name^="order"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name^="order"]').val();
+         }).each(function() {
             var build_item = $(this).attr('class');
-            var itemType = type_to_type[settings.variable_vault.find('input.'+build_item+'[name="type\[\]"]').val()];
+            var itemType = type_to_type[settings.variable_vault.find('input.'+build_item+'[name^="type"]').val()];
 
             // Populate all the variables
             var vars = {};
             $.each(itemType.variables, function(index, value) {    // Iterate through field variables and colect values. These values are stored in vars under the name of the variable
-               vars[value] = settings.variable_vault.find('input.'+build_item+'[name="'+value+'\[\]"]').val();    // Load from the hidden input fields
+               vars[value] = settings.variable_vault.find('input.'+build_item+'[name^="'+value+'"]').val();    // Load from the hidden input fields
             });
             if ($.isFunction(settings.beforeDisplay)) {
                settings.beforeDisplay(itemType, vars);
             }
             var depth_class = '';
             if (settings.depth) {
-               depth_class = ' depth_'+settings.variable_vault.find('input.'+build_item+'[name="depth\[\]"]').val();
+               depth_class = ' depth_'+settings.variable_vault.find('input.'+build_item+'[name^="depth"]').val();
             }
             var html_text = '\
              <li class="form_field '+build_item+depth_class+'">\
@@ -677,14 +675,13 @@
             that.current_divider = that.element.find('.field_divider').filter(':first');
          }
          if (temp_current_divider) {
-            that.current_divider = temp_current_divder
+            that.current_divider = temp_current_divder;
          }
          $.fn.listable.counter ++;  // So that the counter is one more than the total number of elements
          return this;
       },
       transfer: function(event, ui) {
          var settings = this.options;
-         var that = this;
 
          field_class = ui.item.attr('class').replace(/form_field /,'').replace(/ depth_\d/, '').replace(/ ui-sortable-helper/, '');
          $('.field_divider.place_holder').removeClass('place_holder').addClass(field_class);
@@ -697,7 +694,7 @@
          var that = this;
 
          that.element.find('.form_field').each(function(index) {
-            $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name="order\[\]"]').val(index);
+            $(settings.variable_vault).find('input.'+$(this).attr('class').replace(/form_field /,'').replace(/ depth_\d/, '')+'[name^="order"]').val(index);
          });
          return this;
       }
