@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                  ' *  License: <%= pkg.license %>\n' +
                  ' */\n\n'
       },
-      // jshint config
+      // config for jshint
       jshint: {
          options: {
             eqeqeq: true,
