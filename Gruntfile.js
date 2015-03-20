@@ -12,11 +12,10 @@ module.exports = function(grunt) {
                  ' *  License: <%= pkg.license %>\n' +
                  ' */\n\n'
       },
-      // jshint config
+      // config for jshint
       jshint: {
          options: {
-            eqeqeq: true,
-            trailing: true
+            jshintrc: true
          },
          target: {
             src: ['src/**/*.js']
@@ -56,12 +55,18 @@ module.exports = function(grunt) {
                'dist/jquery.listable.min.js': ['dist/jquery.listable.js']
             }
          }
+      },
+      // watch for changes to source
+      watch: {
+          files: ['src/*'],
+          tasks: ['default']
       }
    });
    grunt.loadNpmTasks('grunt-contrib-jshint');
    grunt.loadNpmTasks('grunt-contrib-concat');
    grunt.loadNpmTasks('grunt-contrib-uglify');
    grunt.loadNpmTasks('grunt-contrib-copy');
-   grunt.registerTask('default', ['concat', 'copy', 'uglify']);
+   grunt.loadNpmTasks('grunt-contrib-watch');
+   grunt.registerTask('default', ['jshint', 'concat', 'copy', 'uglify']);
    grunt.registerTask('test', ['jshint']);
 };
