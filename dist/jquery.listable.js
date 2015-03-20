@@ -1,10 +1,10 @@
-/*! Listable v0.9.2 - 2015-03-20 
- *  Author: Sean Zellmer 
+/*! Listable v0.9.2 - 2015-03-20
+ *  Author: Sean Zellmer
  *  License: MIT
  */
 
 ;(function ( $, window, document, undefined ) {
-            
+
     var update = false, // Whether the current form is an update or not
         no_focus = true;
 
@@ -12,7 +12,7 @@
         // Options to be used as defaults
         options: {
             'add'                      : true,  // Broken but should enable adding list items
-            'add_after'                : true,  // Maybe Broken. Might need to be changed to default false and to set adding new items at the top of the list 
+            'add_after'                : true,  // Maybe Broken. Might need to be changed to default false and to set adding new items at the top of the list
             'add_image'                : '/javascripts/listable/images/add.png',
             'auto_build'               : true,
             'connectWith'              : '',
@@ -68,7 +68,7 @@
             }
 
             // ===== Lets build things =====
-         
+
             // ----- Build listable from existing elements -----
             $.fn.listable.counter += settings.variable_vault.find('input[name^="type"]').length + 1;
             if (settings.auto_build) {
@@ -391,8 +391,8 @@
                }
             });
          }
-            
-            
+
+
             return this;
         },
 
@@ -555,7 +555,7 @@
 
             // Make sure all elements are in order
             this.update_order();
-               
+
             return this;
         },
 
@@ -601,7 +601,7 @@
                that.current_divider = that.element.find('.field_divider').filter(':first');
             }
          }
-         
+
          // Find all label[] hidden inputs and then sort by order[] from high to low
          settings.variable_vault.find('input[name^="type"]').sort(function(a, b) {
             return settings.variable_vault.find('input.'+$(b).attr('class')+'[name^="order"]').val() - settings.variable_vault.find('input.'+$(a).attr('class')+'[name^="order"]').val();
