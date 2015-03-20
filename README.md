@@ -67,3 +67,10 @@ For more examples, check out the [examples folder](https://github.com/lejeuneren
 
 ## Documentation
 Find more detailed documentation under the "Documentation" section at [Listable's website](http://listable.highgatecross.com).
+
+## Contribute
+
+```sh
+npm i
+grunt watch
+```
