@@ -5,7 +5,7 @@ An extension of jQuery UI's sortables to provide a highly customizable list of o
 
 License: [GNU GPL v2.0](http://www.gnu.org/licenses/gpl-2.0.html)
 
-[![Listable](http://listable.highgatecross.com/xm_client/images/Listable-Logo.png "Listable")](http://listable.highgatecross.com)
+[![Listable](http://listable.highgate-creative.com/xm_client/images/Listable-Logo.png "Listable")](http://listable.highgate-creative.com)
 
 ## Basic Usage
 First you have to define what types of elements listable can use. You can do this by giving listable an array of objects when you instantiate it. Each object must include:
@@ -66,7 +66,7 @@ $('#todo_item').submit(function(event) {
 For more examples, check out the [examples folder](https://github.com/lejeunerenard/listable/tree/master/examples).
 
 ## Documentation
-Find more detailed documentation under the "Documentation" section at [Listable's website](http://listable.highgatecross.com).
+Find more detailed documentation under the "Documentation" section at [Listable's website](http://listable.highgate-creative.com).
 
 ## Contribute
 
