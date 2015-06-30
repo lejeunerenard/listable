@@ -97,7 +97,7 @@
 
 
                 // Listable controls click event
-                $('.listable-controls .button').live('click', function(e) {
+                $('.listable-controls').on('click', '.button', function(e) {
                     $(settings.form_vault + ' form').hide();
                     $($(this).attr('href')).show();
                     var fancybox_options = $.extend({}, {
@@ -127,7 +127,7 @@
             }
 
             if ( ! settings.image_dragging ) {
-                this.element.find('img').live('dragstart', function(event) { event.preventDefault(); });
+                this.element.on('dragstart', 'img', function(event) { event.preventDefault(); });
             }
 
             // The following couple lines deal with a variable that mitigates whether keyboard shortcuts work or not
@@ -140,14 +140,8 @@
             $('input, select').blur(function(){
                 no_focus = true;
             });
-            $('#app_folder_chosen').live('focus',function(){
-                no_focus = false;
-            });
-            $('#app_folder_chosen').live('blur',function(){
-                no_focus = true;
-            });
             if (settings.field_dividers_enabled) {
-                $('.field_divider').live('mouseover mouseout', function(event) {    // Fade effect for hovering over current divider
+                this.element.on('mouseover mouseout', '.field_divider', function(event) {    // Fade effect for hovering over current divider
                     if (event.type === 'mouseover') {
                         $(this).stop();
                         $(this).fadeTo('slow', 0.5);
@@ -174,7 +168,7 @@
                     field_divider_click = settings.field_divider_click;
                 }
                 // Click event for all field dividers
-                $('.field_divider').live('click', field_divider_click);
+                this.element.on('click', '.field_divider', field_divider_click);
             }
             if ( settings.controls ) {
                 $('.listable-controls .close').click(function(event){
@@ -183,7 +177,7 @@
                 });
             }
             if (settings.depth) {    // If the delete setting is set to true then enable the delete button
-                this.element.find('.field_depth').live('click', function(event){
+                this.element.on('click', '.field_depth', function(event){
                     if ($(this).hasClass('shallower')) {
                         update_class = $(this).attr('class').replace(/field_depth shallower /,'');
                         depth = parseInt(settings.variable_vault.find('input.'+update_class+'[name^="depth"]').val());
@@ -214,7 +208,7 @@
             }
             if (settings.gear_image) {    // If the delete setting is set to true then enable the delete button
                 this.element.find('.listable_item_buttons').hide(0);
-                this.element.find('.listable_gear').live('click', function(event){
+                this.element.on('click', '.listable_gear', function(event){
                     event.preventDefault();
                     if (settings.gear_transition === 'slide') {
                         $(this).siblings('.listable_item_buttons').slideToggle('fast');
@@ -224,7 +218,7 @@
                 });
             }
             if (settings.delete) {    // If the delete setting is set to true then enable the delete button
-                this.element.find('.delete_field').live('click', function(event){
+                this.element.on('click', '.delete_field', function(event){
                     if (settings.delete_confirmation && !confirm('Are you sure you want to delete this? (click "Cancel" for "no")') ) {
                         return false;
                     }
@@ -246,7 +240,7 @@
             }
             if (settings.edit) {    // If the edit setting is set to true then enable the edit button
 
-                this.element.find('.edit_field').live('click', function(event){
+                this.element.on('click', '.edit_field', function(event){
                     $.fn.listable.current_listable = that.element;
                     edit_link = $(this);
                     update = $(this).attr('class').replace(/edit_field /,'');
