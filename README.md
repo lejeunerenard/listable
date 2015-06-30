@@ -1,9 +1,9 @@
-jquery.listable.js
-==================
+# jquery.listable.js
 
 An extension of jQuery UI's sortables to provide a highly customizable list of objects.
 
 License: [GNU GPL v2.0](http://www.gnu.org/licenses/gpl-2.0.html)
+jQuery >= 1.8.3
 
 [![Listable](http://listable.highgate-creative.com/xm_client/images/Listable-Logo.png "Listable")](http://listable.highgate-creative.com)
 
