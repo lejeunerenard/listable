@@ -1,4 +1,4 @@
-/*! Listable v0.9.1 - 2015-06-30 
+/*! Listable v0.9.2 - 2015-06-30 
  *  Author: Sean Zellmer 
  *  License: MIT
  */

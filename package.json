@@ -1,6 +1,6 @@
 {
   "name": "Listable",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "An extension of jQuery UI's sortables to provide a highly customizable list of objects.",
   "main": "jquery.listable.js",
   "directories": {
