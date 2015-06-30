@@ -500,13 +500,18 @@
             }
 
             // Update or create hidden inputs
-            $.each(vars, function(name, value) {
+            for (var name in vars) {
+                if (!vars.hasOwnProperty(name)) {
+                    continue;
+                }
+                value = vars[name];
+
                 if (update) { // Check to see if the user is updating an item or creating a new one
                     settings.variable_vault.find('input.'+update+'[name^="'+name+'"]').val(value);    // Update all the hidden input fields with values collected
                 } else {
                     $(settings.variable_vault).append('<input type="hidden" name="'+name+'[]" value="'+value+'" class="field_'+$.fn.listable.counter+'" >');    // Add the hidden input element to the variable vault
                 }
-            });
+            }
 
             //    Now add standard variables like order and type
             if (!update) {
