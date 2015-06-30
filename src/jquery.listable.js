@@ -140,12 +140,6 @@
             $('input, select').blur(function(){
                 no_focus = true;
             });
-            $('#app_folder_chosen').live('focus',function(){
-                no_focus = false;
-            });
-            $('#app_folder_chosen').live('blur',function(){
-                no_focus = true;
-            });
             if (settings.field_dividers_enabled) {
                 this.element.on('mouseover mouseout', '.field_divider', function(event) {    // Fade effect for hovering over current divider
                     if (event.type === 'mouseover') {
